@@ -11,10 +11,9 @@ import (
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "Ginger-cli"
+	app.Name = "ginger-cli"
 	app.Version = "0.0.1"
 	app.Compiled = time.Now()
-	app.HelpName = "help"
 	app.Usage = "A client of ginger scaffold."
 	app.UsageText = "ginger-cli [option] [command] [args]"
 	app.ArgsUsage = "[args and such]"
@@ -26,7 +25,6 @@ func main() {
 	}
 	app.Commands = []cli.Command{
 		cmd.InitCommand,
-		cmd.MigrateCommand,
 		cmd.BuilderCommand,
 	}
 
@@ -35,3 +33,5 @@ func main() {
 		log.Fatal(err)
 	}
 }
+
+

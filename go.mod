@@ -1,4 +1,4 @@
-module ginger-cli
+module github.com/gofuncchan/ginger-cli
 
 go 1.12
 

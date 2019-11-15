@@ -9,7 +9,7 @@ import (
 var InitCommand = cli.Command{
 	Name:        "init",
 	Usage:       "ginger app init.",
-	UsageText:   "ginger-cli init [--name|-n] [app name]",
+	UsageText:   "ginger-cli init [--name|-n] [project_name]",
 	Description: "The init command create a new gin application in current directory，this command will generate some necessary folders and files,which make up project scaffold.",
 	Flags: []cli.Flag{
 		cli.StringFlag{Name: "name, n",Usage:"project name"},
@@ -38,10 +38,6 @@ func initCommandFunc(c *cli.Context) error {
 		return util.OutputError("initialization failed, please check directory permissions")
 	}
 
-	util.OutputInfo("Project Name",name)
-
-
-
 	// 远程拉取ginger脚手架代码
 	done := util.GitClone(name)
 	if !done {
@@ -55,6 +51,7 @@ func initCommandFunc(c *cli.Context) error {
 
 	initGit := c.Bool("g")
 	if initGit {
+		util.OutputStep("`git init`")
 		InitGitCmd := "cd "+name +" && git init"
 		err, _, _ := util.ExecShellCommand(InitGitCmd)
 		if err != nil {
@@ -63,5 +60,6 @@ func initCommandFunc(c *cli.Context) error {
 		util.OutputOk("git init successful")
 	}
 
+	util.OutputOk("Your project `"+ name +"` set up successful")
 	return nil
 }

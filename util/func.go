@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"syscall"
 )
 
 // 检查目录权限
 func CheckDirMode() bool {
-	Msg("Env Checking")
+	OutputStep("Env Checking")
 	// 获取当前目录
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	dir, err := os.Getwd()
+	// dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
@@ -33,9 +33,8 @@ func CheckDirMode() bool {
 const GitUrl = "https://github.com/gofuncchan/ginger.git"
 
 func GitClone(appName string) bool {
-	shellCmd := "git clone " + GitUrl + " " + appName
-	Msg(shellCmd)
-
+	shellCmd := "`git clone " + GitUrl + " " + appName + "`"
+	OutputStep(shellCmd)
 	err, _, _ := ExecShellCommand(shellCmd)
 	if err != nil {
 		OutputError(err.Error())
