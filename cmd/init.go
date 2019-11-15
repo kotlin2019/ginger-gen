@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"ginger-cli/util"
+	"github.com/gofuncchan/ginger-cli/util"
 	"github.com/urfave/cli"
 	"os"
 )

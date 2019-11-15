@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"bytes"
-	"fmt"
-	"github.com/gofuncchan/ginger-forge/lib/schema"
-	"github.com/gofuncchan/ginger-forge/lib/util"
+	forgeDao "github.com/gofuncchan/ginger-forge/lib/dao"
+	forgeSchema "github.com/gofuncchan/ginger-forge/lib/schema"
+	forgeUtil "github.com/gofuncchan/ginger-forge/lib/util"
 	"github.com/urfave/cli"
 	"io"
 )
@@ -37,7 +37,7 @@ var subCommandSchema = cli.Command{
 
 func subCommandSchemaAction(c *cli.Context) error {
 	// 接收参数
-	schemaArgs := &util.SchemaArgs{
+	schemaArgs := &forgeUtil.SchemaArgs{
 		Database: c.String("database"),
 		Table:    c.String("table"),
 		User:     c.String("user"),
@@ -49,28 +49,28 @@ func subCommandSchemaAction(c *cli.Context) error {
 	// 可写缓冲
 	var buff bytes.Buffer
 	// 加包名
-	_, err := io.Copy(&buff, schema.AddImportContent(schemaArgs.Table))
+	_, err := io.Copy(&buff, forgeSchema.AddImportContent(schemaArgs.Table))
 	if err != nil {
-		return util.OutputError(err.Error())
+		return forgeUtil.OutputError(err.Error())
 	}
 	// 生成go 结构体 代码
-	_, err = schema.GenSchema(&buff, schemaArgs)
+	_, err = forgeSchema.GenSchema(&buff, schemaArgs)
 	if err != nil {
-		return util.OutputError(err.Error())
+		return forgeUtil.OutputError(err.Error())
 	}
 
 	// 设置输出
-	out, err := util.OutputFile(schemaArgs.Table,c.Command.Name)
+	out, err := forgeUtil.OutputFile(schemaArgs.Table,c.Command.Name)
 	if err != nil {
-		util.OutputWarn(err.Error())
+		forgeUtil.OutputWarn(err.Error())
 	}
 
 	_, err = io.Copy(out, &buff)
 	if err != nil {
-		return util.OutputError(err.Error())
+		return forgeUtil.OutputError(err.Error())
 	}
 
-	util.OutputOk("Generate go struct from table schema successful")
+	forgeUtil.OutputOk("Generate go struct from table schema successful")
 
 	return nil
 }
@@ -90,11 +90,47 @@ var subCommandDao = cli.Command{
 }
 
 func subCommandDaoAction(c *cli.Context) error {
-	fmt.Println("host:", c.String("host"))
-	fmt.Println("port:", c.Int("port"))
-	fmt.Println("user:", c.String("user"))
-	fmt.Println("password:", c.String("password"))
-	fmt.Println("database:", c.String("database"))
-	fmt.Println("table:", c.String("table"))
+	// 接收参数
+	schemaArgs := &forgeUtil.SchemaArgs{
+		Database: c.String("database"),
+		Table:    c.String("table"),
+		User:     c.String("user"),
+		Password: c.String("password"),
+		Host:     c.String("host"),
+		Port:     c.Int("port"),
+
+	}
+
+	// 可写缓冲
+	var buff bytes.Buffer
+	// 加包名和导入包代码
+	_, err := io.Copy(&buff, forgeDao.AddImportContent(schemaArgs.Table))
+	if err != nil {
+		return forgeUtil.OutputError(err.Error())
+	}
+
+	// 生成go结构体代码
+	structName, err := forgeSchema.GenSchema(&buff, schemaArgs)
+	if err != nil {
+		return forgeUtil.OutputError(err.Error())
+	}
+
+	// structName := forgeSchema.ConvertUnderScoreToCamel(schemaArgs.Table)
+	// 生成curd方法
+	err = forgeDao.GenDao(&buff,schemaArgs.Table, structName)
+	if err != nil {
+		return forgeUtil.OutputError(err.Error())
+	}
+
+	// 设置输出
+	out, err := forgeUtil.OutputFile(schemaArgs.Table,c.Command.Name)
+	if err != nil {
+		forgeUtil.OutputWarn(err.Error())
+	}
+
+	_, err = io.Copy(out, &buff)
+	if err != nil {
+		return  forgeUtil.OutputError(err.Error())
+	}
 	return nil
 }

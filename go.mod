@@ -2,6 +2,10 @@ module github.com/gofuncchan/ginger-cli
 
 go 1.12
 
+replace github.com/gofuncchan/ginger => /Users/fun/Code/go/src/github.com/gofuncchan/ginger
+replace github.com/gofuncchan/ginger-cli => /Users/fun/Code/go/src/github.com/gofuncchan/ginger-cli
+replace github.com/gofuncchan/ginger-forge => /Users/fun/Code/go/src/github.com/gofuncchan/ginger-forge
+
 replace golang.org/x/text => github.com/golang/text v0.3.2
 
 replace golang.org/x/net => github.com/golang/net v0.0.0-20191101175033-0deb6923b6d9
@@ -48,4 +52,7 @@ replace go.uber.org/multierr => github.com/uber-go/multierr v1.4.0
 
 replace go.uber.org/tools => github.com/uber-go/tools v0.0.0-20190618225709-2cfd321de3ee
 
-require github.com/urfave/cli v1.22.1
+require (
+	github.com/gofuncchan/ginger-forge v0.0.0-20191114173318-6e7ec8a9fc06
+	github.com/urfave/cli v1.22.1
+)

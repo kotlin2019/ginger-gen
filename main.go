@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"ginger-cli/cmd"
+	"github.com/gofuncchan/ginger-cli/cmd"
+
 	"github.com/urfave/cli"
 	"log"
 	"os"
