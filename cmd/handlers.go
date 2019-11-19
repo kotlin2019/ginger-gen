@@ -7,7 +7,6 @@ import (
 	"github.com/urfave/cli"
 	"io"
 	"text/template"
-
 )
 
 // 创建handlers方法
@@ -17,8 +16,8 @@ var HandlerCommand = cli.Command{
 	UsageText:   "ginger-cli handler [sub-command] [option]",
 	Description: "generate handler function code and request params validator struct",
 	Flags: []cli.Flag{
-		cli.StringFlag{Name: "name, n"},
-		cli.StringFlag{Name: "func, f"},
+		cli.StringFlag{Name: "file, f",Usage:"handler file name",},
+		cli.StringSliceFlag{Name: "func, F",Usage:"handler function name,one or more"},
 	},
 	Action: handlerCommandAction,
 }
@@ -32,60 +31,66 @@ type tmplData struct {
 }
 
 func handlerCommandAction(c *cli.Context) error {
-	fileName := c.String("name") // 生成文件名
-	funcName := c.String("func") // handler函数名
+	fileName := c.String("file") // 生成文件名
+	// funcName := c.String("func") // handler函数名
+	fs := c.StringSlice("func")
 
-	var buff bytes.Buffer
-	err := template.Must(template.New("handler").Parse(handlerCode)).Execute(&buff, tmplData{
-		PackageName:"handlers",
-		FileName:fileName,
-		StructName: funcName +"Params",
-		FuncName:  funcName,
-	})
-	if err != nil {
-		return err
+
+	var buffs bytes.Buffer
+	for _,f := range fs {
+		var buff bytes.Buffer
+		// handler函数模板
+		err := template.Must(template.ParseFiles("./tmpl/handler.tmpl")).Execute(&buff, tmplData{
+			PackageName:"handler",
+			FileName:fileName,
+			StructName: f +"Params",
+			FuncName:  f,
+		})
+		if err != nil {
+			return err
+		}
+		io.Copy(&buffs,&buff)
 	}
 
+
 	// 设置输出
-	out, err := util.OutputHandlerFile(util.HandlerOutputRootPath,c.Command.Name)
+	out, err := util.OutputHandlerFile(util.HandlerOutputRootPath,fileName)
 	if err != nil {
 		util.OutputWarn(err.Error())
 	}
 
-	_, err = io.Copy(out,&buff)
+	_, err = io.Copy(out,&buffs)
 	if err != nil {
 		return err
 	}
 
-	// TODO stdout 输出router代码设置
+	// stdout 输出router代码设置
+	util.OutputInfo("Generate Successful",outputTips(fileName,fs))
 
 	return nil
 }
 
-func AddImportContent(packageName string) io.Reader {
-	return bytes.NewBuffer([]byte(fmt.Sprintf(`package %s
+func outputTips(fileName string ,funcNames []string) string {
+	var header = `binding this handler function to app router.
+	For example:`
+	var footer = `According to the http method what you need,copy the code to router/router.go.`
+	var examples string
+	for _,f := range funcNames{
+		snake := util.SnakeString(f)
+		examples += fmt.Sprintf(`
+		r.POST("%s/%s", handler.%s)
+		
+	`,fileName,snake, f)
+	}
 
-	`, packageName)))
+	return header + examples + footer
+
 }
 
-const handlerCode = `package {{.PackageName}}
-import (
-\	"errors"
-	"time"
-	"context"
-\
-)
 
-/*
-This code is generated with ginger-cli
-*/
+const routerCode  =  `
 
-// {{ .StructName }} is a mapping object for params in request
-type {{.StructName}} struct {
-{{- range .FieldList }}
-	{{ .Name }} {{ .Type }} {{ .StructTag }}
-{{- end}}
-}
 
+	r.POST("/signup", handlers.SignUp)
 
 `

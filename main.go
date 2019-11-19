@@ -26,6 +26,7 @@ func main() {
 	app.Commands = []cli.Command{
 		cmd.InitCommand,
 		cmd.MysqlCommand,
+		cmd.HandlerCommand,
 	}
 
 	err := app.Run(os.Args)
