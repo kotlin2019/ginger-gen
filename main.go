@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/gofuncchan/ginger-cli/cmd"
-
 	"github.com/urfave/cli"
 	"log"
 	"os"
@@ -13,7 +12,7 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "ginger-cli"
-	app.Version = "0.0.1"
+	app.Version = "0.1.0"
 	app.Compiled = time.Now()
 	app.Usage = "A client of ginger scaffold."
 	app.UsageText = "ginger-cli [option] [command] [args]"
@@ -21,12 +20,12 @@ func main() {
 	app.UseShortOptionHandling = true
 
 	app.Action = func(c *cli.Context) error {
-		fmt.Println("Ginger-cli is a client of ginger scaffold.")
+		fmt.Println("ginger-cli is a client of ginger scaffold.")
 		return nil
 	}
 	app.Commands = []cli.Command{
 		cmd.InitCommand,
-		cmd.BuilderCommand,
+		cmd.MysqlCommand,
 	}
 
 	err := app.Run(os.Args)
@@ -34,5 +33,3 @@ func main() {
 		log.Fatal(err)
 	}
 }
-
-

@@ -9,10 +9,10 @@ import (
 	"io"
 )
 
-var BuilderCommand = cli.Command{
-	Name:        "builder",
+var MysqlCommand = cli.Command{
+	Name:        "mysql",
 	Usage:       "generate dao code",
-	UsageText:   "ginger-cli builder [sub-command] [option]",
+	UsageText:   "ginger-cli mysql [sub-command] [option]",
 	Description: "generate sql builder code for dao which fork didi/gendry",
 	Subcommands: []cli.Command{
 		subCommandSchema,
@@ -25,7 +25,7 @@ var subCommandSchema = cli.Command{
 	UsageText:   "",
 	Description: "generate mysql table schema to go struct",
 	Flags: []cli.Flag{
-		cli.StringFlag{Name: "host, h", Value: "localhost"},
+		cli.StringFlag{Name: "host, H", Value: "localhost"},
 		cli.IntFlag{Name: "port, P", Value: 3306},
 		cli.StringFlag{Name: "user, u",Value:"root"},
 		cli.StringFlag{Name: "password, p",Value:"123456"},
@@ -60,7 +60,7 @@ func subCommandSchemaAction(c *cli.Context) error {
 	}
 
 	// 设置输出
-	out, err := forgeUtil.OutputFile(schemaArgs.Table,c.Command.Name)
+	out, err := forgeUtil.OutputFile(forgeUtil.DefaultSchemaOutputRootPath,schemaArgs.Table,c.Command.Name)
 	if err != nil {
 		forgeUtil.OutputWarn(err.Error())
 	}
@@ -77,9 +77,9 @@ func subCommandSchemaAction(c *cli.Context) error {
 
 var subCommandDao = cli.Command{
 	Name:      "dao",
-	UsageText: "generate mysql table schema to go struct and CURD code",
+	UsageText: "generate mysql table schema to go struct and mysql CURD code",
 	Flags: []cli.Flag{
-		cli.StringFlag{Name: "host, h", Value: "localhost"},
+		cli.StringFlag{Name: "host, H", Value: "localhost"},
 		cli.IntFlag{Name: "port, P", Value: 3306},
 		cli.StringFlag{Name: "user, u",Value:"root"},
 		cli.StringFlag{Name: "password, p",Value:"123456"},
@@ -123,7 +123,7 @@ func subCommandDaoAction(c *cli.Context) error {
 	}
 
 	// 设置输出
-	out, err := forgeUtil.OutputFile(schemaArgs.Table,c.Command.Name)
+	out, err := forgeUtil.OutputFile(forgeUtil.DefaultSchemaOutputRootPath,schemaArgs.Table,c.Command.Name)
 	if err != nil {
 		forgeUtil.OutputWarn(err.Error())
 	}
