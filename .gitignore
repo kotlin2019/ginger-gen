@@ -19,3 +19,7 @@
 
 # go mod
 go.sum
+
+#demo
+/app
+ginger_cli
