@@ -30,6 +30,7 @@ func main() {
 		cmd.ModelCommand,
 		cmd.RepoCommand,
 		cmd.CacheCommand,
+		cmd.ConfigCommand,
 	}
 
 	err := app.Run(os.Args)
