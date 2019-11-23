@@ -26,7 +26,7 @@ GLOBAL OPTIONS:
 #### init project
 ```
 NAME:
-   ginger_cli init - ginger app init.
+   ginger-cli init - ginger app init.
 
 USAGE:
    ginger-cli init [--name|-n] [project_name]
@@ -53,9 +53,9 @@ ginger-cli provide many command to help you generate code,like:
 
 - handler function code
 - sql builder code for mysql
-- biz model function code for mysql 
-- mongo repository function
-- redis cache function
+- biz model code for mysql 
+- mongo repository code
+- redis cache code
 
 Use `ginger-cli [command] -h` to see command detail.
 
