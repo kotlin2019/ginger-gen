@@ -47,7 +47,7 @@ func OutputFile(root, module string) (io.Writer, error) {
 		case ModelOutput:
 			out = addModelImportContent(module)
 		case RepoOutput:
-			out = addRepoImportContent()
+			out = addRepoImportContent(module)
 		case CacheOutput:
 			out = addCacheImportContent()
 		}
@@ -86,32 +86,68 @@ func addModelImportContent(module string) io.Reader {
 	return bytes.NewBuffer([]byte(fmt.Sprintf(`package model
 
 import(
-    "github.com/gofuncchan/ginger/dao/mysql/%s_builder"
-    "github.com/gin-gonic/gin"
+    builder "github.com/gofuncchan/ginger/dao/mysql/%s_builder"
+    "github.com/gofuncchan/ginger/util/e"
 )
 
 /*
 This code is generated with ginger-cli.
-You should handle errors in Model function,and return data or result to caller.
+You should handling errors in model function,and return data or result to caller.
+
+For example:
+
+func CreateUserByPhone(name, phone, passwd, salt string) int64 {
+	var data []map[string]interface{}
+	data = append(data, map[string]interface{}{
+		"name":   name,
+		"phone":  phone,
+		"password": password,
+		"salt":   salt,
+	})
+
+	id, err := builder.Insert(data)
+	if !e.Em(err) {
+		return -1
+	}
+	return id
+}
+
 */
 
 	`,module)))
 }
 
-func addRepoImportContent() io.Reader {
+func addRepoImportContent(module string) io.Reader {
 	return bytes.NewBuffer([]byte(fmt.Sprintf(`package repository
 
 import(
-   	"github.com/gofuncchan/ginger/dao/mongodb"
+   	mongo "github.com/gofuncchan/ginger/dao/mongodb"
+	"github.com/gofuncchan/ginger/util/e"
 	"gopkg.in/mgo.v2"
-	"error"
 )
 
 /*
 This code is generated with ginger-cli.
+You should handling errors in repository function,and return data or result to caller.
+
+For example:
+
+func InsertPost(dataMap map[string]interface{}) (b bool) {
+
+	// Use mongodb dao common function
+	err := mongo.Insert(MongoPostCollection,dataMap)
+	
+	if !e.Em(err) {
+		return false
+	}
+
+	return true
+}
 */
 
-	`)))
+const Mongo%sCollection = "%s"
+
+	`,CamelString(module),module)))
 }
 
 
@@ -125,6 +161,15 @@ import(
 
 /*
 This code is generated with ginger-cli.
+You should handling errors in cache function,and return data or result to caller.
+
+For example:
+
+func SetKey(key, value string) bool {
+	rs, _ := redigo.String(redis.R("SET", key, value, "EX", 3600))
+	return rs == "OK"
+}
+
 */
 
 	`)))

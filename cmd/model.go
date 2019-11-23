@@ -10,7 +10,7 @@ import (
 )
 
 type modelTmplData struct {
-	FuncName    string
+	FuncName string
 }
 
 // 创建mysql model方法
@@ -36,12 +36,15 @@ func modelCommandAction(c *cli.Context) error {
 		var buff bytes.Buffer
 		// handler函数模板
 		err := template.Must(template.ParseFiles("./tmpl/model.tmpl")).Execute(&buff, modelTmplData{
-			FuncName:    f,
+			FuncName: f,
 		})
 		if err != nil {
 			return err
 		}
-		io.Copy(&buffs, &buff)
+		_, err = io.Copy(&buffs, &buff)
+		if err != nil {
+			return err
+		}
 	}
 
 	// 设置输出
@@ -63,7 +66,7 @@ func modelCommandAction(c *cli.Context) error {
 
 func outputModelTips(funcNames []string) string {
 	header := "Please reset input or output params of model function.\n"
-	footer := "You should handle errors in model function,and return data or result to caller.\n"
+	footer := "You should handling errors in model function,and return data or result to caller.\n"
 	examples := "For example:\n"
 
 	for _, f := range funcNames {
@@ -72,7 +75,7 @@ func outputModelTips(funcNames []string) string {
 			// TODO model logic code
 			// ...
 			}
-	`,  f)
+	`, f)
 	}
 
 	return header + examples + footer

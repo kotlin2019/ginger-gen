@@ -12,7 +12,7 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "ginger-cli"
-	app.Version = "0.1.0"
+	app.Version = "0.2.0"
 	app.Compiled = time.Now()
 	app.Usage = "A client of ginger scaffold."
 	app.UsageText = "ginger-cli [option] [command] [args]"
@@ -27,6 +27,9 @@ func main() {
 		cmd.InitCommand,
 		cmd.MysqlCommand,
 		cmd.HandlerCommand,
+		cmd.ModelCommand,
+		cmd.RepoCommand,
+		cmd.CacheCommand,
 	}
 
 	err := app.Run(os.Args)

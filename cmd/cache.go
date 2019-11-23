@@ -11,15 +11,19 @@ import (
 
 // 创建redis cache方法
 var CacheCommand = cli.Command{
-	Name:        "handler",
+	Name:        "cache",
 	Usage:       "generate cache function code",
 	UsageText:   "ginger-cli cache [option]",
 	Description: "generate cache function code ",
 	Flags: []cli.Flag{
-		cli.StringFlag{Name: "file, f", Usage: "cache file name",},
-		cli.StringSliceFlag{Name: "func, F", Usage: "cache function name,one or more"},
+		cli.StringFlag{Name: "module, m", Usage: "cache module name",},
+		cli.StringSliceFlag{Name: "func, f", Usage: "cache function name,one or more"},
 	},
 	Action: cacheCommandAction,
+}
+
+type cacheTmplData struct {
+	FuncName string
 }
 
 func cacheCommandAction(c *cli.Context) error {
@@ -31,9 +35,7 @@ func cacheCommandAction(c *cli.Context) error {
 	for _, f := range fs {
 		var buff bytes.Buffer
 		// handler函数模板
-		err := template.Must(template.ParseFiles("./tmpl/cache.tmpl")).Execute(&buff, repoTmplData{
-			ModuleName:     util.CamelString(module),
-			CollectionName: module,
+		err := template.Must(template.ParseFiles("./tmpl/cache.tmpl")).Execute(&buff, cacheTmplData{
 			FuncName:       f,
 		})
 		if err != nil {
@@ -43,7 +45,7 @@ func cacheCommandAction(c *cli.Context) error {
 	}
 
 	// 设置输出
-	out, err := util.OutputFile(util.RepoOutput, module)
+	out, err := util.OutputFile(util.CacheOutput, module)
 	if err != nil {
 		util.OutputWarn(err.Error())
 	}
@@ -54,14 +56,14 @@ func cacheCommandAction(c *cli.Context) error {
 	}
 
 	// stdout 输出router代码设置
-	util.OutputInfo("Generate Successful", outputRepoTips(module, fs))
+	util.OutputInfo("Generate Successful", outputCacheTips(fs))
 
 	return nil
 }
 
-func outputCacheTips(moduleName string, funcNames []string) string {
+func outputCacheTips(funcNames []string) string {
 	header := "Please reset input or output params of cache function.\n"
-	footer := "You should handle errors in cache function,and return data or result to caller.\n"
+	footer := "You should handling errors in cache function,and return data or result to caller.\n"
 	examples := "For example:\n"
 
 	for _, f := range funcNames {

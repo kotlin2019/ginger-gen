@@ -13,8 +13,8 @@ func {{ .FuncName }}(c *gin.Context){
     // validate request params
     form := new({{ .StructName }})
     if err := c.ShouldBind(form); err != nil {
-    common.ResponseInvalidParam(c,err)
-    return
+        common.ResponseInvalidParam(c,err)
+        return
     }
 
     // TODO your biz logic code ...
