@@ -1,29 +1,30 @@
 package cmd
 
-import "github.com/urfave/cli"
+import (
+	"github.com/urfave/cli"
+)
 
 // 根据config 配置文件生成配置参数解析代码
 var ConfigCommand = cli.Command{
 	Name:        "config",
-	Usage:       "generate config loading code for yaml",
+	Usage:       "generate config parse code for yaml file ",
 	UsageText:   "ginger-cli config [sub-command] [option]",
 	Description: "generate config init code for yaml config file",
 	Subcommands: []cli.Command{
-		subCommandLoading,
+		subCommandParse,
 	},
 }
 
-var subCommandLoading = cli.Command{
-	Name:        "loading",
+var subCommandParse = cli.Command{
+	Name:        "parse",
 	UsageText:   "",
-	Description: "generate config loading code for yaml",
+	Description: "generate config parse code for yaml",
 	Flags: []cli.Flag{
 		cli.StringFlag{Name: "path, p", Value: "config"},
 	},
-	Action: subCommandLoadingAction,
+	Action: subCommandParseAction,
 }
 
-func subCommandLoadingAction(c *cli.Context) error {
-
+func subCommandParseAction(c *cli.Context) error {
 	return nil
 }
