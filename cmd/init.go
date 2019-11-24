@@ -12,8 +12,8 @@ var InitCommand = cli.Command{
 	UsageText:   "ginger-cli init [--name|-n] [project_name]",
 	Description: "The init command create a new gin application in current directory，this command will generate some necessary folders and files,which make up project scaffold.",
 	Flags: []cli.Flag{
-		cli.StringFlag{Name: "name, n",Usage:"project name"},
-		cli.BoolFlag{Name:"g",Usage:"git init"},
+		cli.StringFlag{Name: "name, n", Usage: "project name"},
+		cli.BoolFlag{Name: "g", Usage: "git init"},
 	},
 	Action: initCommandFunc,
 }
@@ -34,7 +34,7 @@ func initCommandFunc(c *cli.Context) error {
 		return util.OutputError("initialization failed, Project Directory Is Exist")
 	}
 
-	if !util.CheckDirMode(){
+	if !util.CheckDirMode() {
 		return util.OutputError("initialization failed, please check directory permissions")
 	}
 
@@ -52,14 +52,33 @@ func initCommandFunc(c *cli.Context) error {
 	initGit := c.Bool("g")
 	if initGit {
 		util.OutputStep("`git init`")
-		InitGitCmd := "cd "+name +" && git init"
-		err, _, _ := util.ExecShellCommand(InitGitCmd)
+		InitGitCmd := "cd " + name + " && git init"
+		err := util.ExecShellCommand(InitGitCmd)
 		if err != nil {
 			return util.OutputError(err.Error())
 		}
+
 		util.OutputOk("git init successful")
 	}
 
-	util.OutputOk("Your project `"+ name +"` set up successful")
+	// 由于使用go module 管理依赖，项目内的包需要replace到本地目录，使用go mod edit 重置
+	pwd, err := os.Getwd()
+	pwd = pwd + "/" + name
+	if err != nil {
+		return util.OutputError(err.Error())
+	}
+
+	goModCmd := "cd " + name + " && go mod edit -replace github.com/gofuncchan/ginger=" + pwd
+	err = util.ExecShellCommand(goModCmd)
+	if err != nil {
+		return util.OutputError(err.Error())
+	}
+
+	util.OutputStep("go mod edit -replace github.com/gofuncchan/ginger=" + pwd)
+	util.OutputOk("Your project `" + name + "` set up successful")
+
+	util.OutputInfo("Tips",`
+	
+`)
 	return nil
 }

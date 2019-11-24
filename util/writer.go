@@ -9,24 +9,24 @@ import (
 
 
 const (
-	HandlerOutput = "handler"
-	ModelOutput   = "model"
-	RepoOutput    = "repository"
-	CacheOutput   = "cache"
+	HandlerPkgName = "handler"
+	ModelPkgName  = "model"
+	RepoPkgName    = "repository"
+	CachePkgName  = "cache"
 )
 
 
 // 输出
-func OutputFile(root, module string) (io.Writer, error) {
+func OutputFile(root,pkgName, module string) (io.Writer, error) {
 	// 创建输出目录
-	err := os.MkdirAll(root, 0755)
+	err := os.MkdirAll(pkgName, 0755)
 	if err != nil {
 		// 如目录创建失败，则标准输出
 		return os.Stdout, err
 	}
 
 	// 如: /handler/user_handler.go 、 /model/user_model.go 、 /repository/user_repository.go
-	filename := root + "/" + module + "_" + root + ".go"
+	filename := pkgName + "/" + module + "_" + pkgName + ".go"
 
 	// 创建输出的目录并创建输出的go文件
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
@@ -41,15 +41,15 @@ func OutputFile(root, module string) (io.Writer, error) {
 	var out io.Reader
 	if os.IsNotExist(err) {
 		OutputInfo("OpenFile", "File is not exist,create new file.")
-		switch root {
-		case HandlerOutput:
-			out = addHandlerImportContent()
-		case ModelOutput:
-			out = addModelImportContent(module)
-		case RepoOutput:
-			out = addRepoImportContent(module)
-		case CacheOutput:
-			out = addCacheImportContent()
+		switch pkgName {
+		case HandlerPkgName:
+			out = addHandlerImportContent(root)
+		case ModelPkgName:
+			out = addModelImportContent(root,module)
+		case RepoPkgName:
+			out = addRepoImportContent(root,module)
+		case CachePkgName:
+			out = addCacheImportContent(root)
 		}
 
 		file, err = os.Create(filename)
@@ -66,11 +66,11 @@ func OutputFile(root, module string) (io.Writer, error) {
 	return std, err
 }
 
-func addHandlerImportContent() io.Reader {
+func addHandlerImportContent(root string) io.Reader {
 	return bytes.NewBuffer([]byte(fmt.Sprintf(`package handler
 
 import(
-    "github.com/gofuncchan/ginger/common"
+    "%s/common"
     "github.com/gin-gonic/gin"
 )
 
@@ -79,15 +79,15 @@ This code is generated with ginger-cli.
 You must reset Request Params, and implement biz logic code.
 */
 
-	`)))
+	`,root)))
 }
 
-func addModelImportContent(module string) io.Reader {
+func addModelImportContent(root string,module string) io.Reader {
 	return bytes.NewBuffer([]byte(fmt.Sprintf(`package model
 
 import(
-	"github.com/gofuncchan/ginger/dao/mysql/%s"
-    "github.com/gofuncchan/ginger/util/e"
+	"%s/dao/mysql/%s"
+    "%s/util/e"
 )
 
 /*
@@ -114,15 +114,15 @@ func CreateUserByPhone(name, phone, passwd, salt string) int64 {
 
 */
 
-	`,module)))
+	`,root,module,root)))
 }
 
-func addRepoImportContent(module string) io.Reader {
+func addRepoImportContent(root,module string) io.Reader {
 	return bytes.NewBuffer([]byte(fmt.Sprintf(`package repository
 
 import(
-   	mongo "github.com/gofuncchan/ginger/dao/mongodb"
-	"github.com/gofuncchan/ginger/util/e"
+   	mongo "%s/dao/mongodb"
+	"%s/util/e"
 	"gopkg.in/mgo.v2"
 )
 
@@ -147,16 +147,16 @@ func InsertPost(dataMap map[string]interface{}) (b bool) {
 
 const Mongo%sCollection = "%s"
 
-	`,CamelString(module),module)))
+	`,root,root,CamelString(module),module)))
 }
 
 
-func addCacheImportContent() io.Reader {
+func addCacheImportContent(root string) io.Reader {
 	return bytes.NewBuffer([]byte(fmt.Sprintf(`package cache
 
 import(
 	redigo "github.com/garyburd/redigo/redis"
-	"github.com/gofuncchan/ginger/dao/redis"
+	"%s/dao/redis"
 )
 
 /*
@@ -172,5 +172,5 @@ func SetKey(key, value string) bool {
 
 */
 
-	`)))
+	`,root)))
 }

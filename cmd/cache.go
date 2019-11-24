@@ -16,6 +16,7 @@ var CacheCommand = cli.Command{
 	UsageText:   "ginger-cli cache [option]",
 	Description: "generate cache function code ",
 	Flags: []cli.Flag{
+		cli.StringFlag{Name: "root, r",Value:"github.com/gofuncchan/ginger", Usage: "root package name"},
 		cli.StringFlag{Name: "module, m", Usage: "cache module name",},
 		cli.StringSliceFlag{Name: "func, f", Usage: "cache function name,one or more"},
 	},
@@ -27,7 +28,7 @@ type cacheTmplData struct {
 }
 
 func cacheCommandAction(c *cli.Context) error {
-
+	root := c.String("root")
 	module := c.String("module")
 	fs := c.StringSlice("func")
 
@@ -45,7 +46,7 @@ func cacheCommandAction(c *cli.Context) error {
 	}
 
 	// 设置输出
-	out, err := util.OutputFile(util.CacheOutput, module)
+	out, err := util.OutputFile(root,util.CachePkgName, module)
 	if err != nil {
 		util.OutputWarn(err.Error())
 	}

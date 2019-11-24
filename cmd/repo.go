@@ -17,6 +17,7 @@ var RepoCommand = cli.Command{
 	UsageText:   "ginger-cli repo [option]",
 	Description: "generate repo file and function code for mongodb repository",
 	Flags: []cli.Flag{
+		cli.StringFlag{Name: "root, r",Value:"github.com/gofuncchan/ginger", Usage: "root package name"},
 		cli.StringFlag{Name: "module, m", Usage: "repo file name",},
 		cli.StringSliceFlag{Name: "func, f", Usage: "repo function name,one or more"},
 	},
@@ -29,7 +30,7 @@ type repoTmplData struct {
 }
 
 func repoCommandAction(c *cli.Context) error {
-
+	root := c.String("root")
 	module := c.String("module")
 	fs := c.StringSlice("func")
 
@@ -48,7 +49,7 @@ func repoCommandAction(c *cli.Context) error {
 	}
 
 	// 设置输出
-	out, err := util.OutputFile(util.RepoOutput, module)
+	out, err := util.OutputFile(root,util.RepoPkgName, module)
 	if err != nil {
 		util.OutputWarn(err.Error())
 	}

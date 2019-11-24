@@ -16,6 +16,7 @@ var HandlerCommand = cli.Command{
 	UsageText:   "ginger-cli handler [option]",
 	Description: "generate handler function code and request params validator struct",
 	Flags: []cli.Flag{
+		cli.StringFlag{Name: "root, r",Value:"github.com/gofuncchan/ginger", Usage: "root package name"},
 		cli.StringFlag{Name: "module, m", Usage: "module name",},
 		cli.StringSliceFlag{Name: "func, f", Usage: "handler function name,one or more"},
 	},
@@ -30,6 +31,7 @@ type handlerTmplData struct {
 }
 
 func handlerCommandAction(c *cli.Context) error {
+	root := c.String("root")
 	module := c.String("module")
 	fs := c.StringSlice("func")
 
@@ -37,16 +39,6 @@ func handlerCommandAction(c *cli.Context) error {
 	var err error
 	for _, f := range fs {
 		var buff bytes.Buffer
-		// handler函数模板
-		// err = template.Must(template.ParseFiles("./tmpl/handler.tmpl")).Execute(&buff, handlerTmplData{
-		// 	PackageName: "handler",
-		// 	ModuleName:    module,
-		// 	StructName:  f + "Params",
-		// 	FuncName:    f,
-		// })
-		// if err != nil {
-		// 	return err
-		// }
 
 		err = template.Must(template.New("handler").Parse(handlerTmplCode)).Execute(&buff, handlerTmplData{
 			PackageName: "handler",
@@ -62,7 +54,7 @@ func handlerCommandAction(c *cli.Context) error {
 	}
 
 	// 设置输出
-	out, err := util.OutputFile(util.HandlerOutput, module)
+	out, err := util.OutputFile(root,util.HandlerPkgName, module)
 	if err != nil {
 		util.OutputWarn(err.Error())
 	}

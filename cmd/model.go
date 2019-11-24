@@ -20,6 +20,7 @@ var ModelCommand = cli.Command{
 	UsageText:   "ginger-cli model [option]",
 	Description: "generate biz logic model function code for mysql builder",
 	Flags: []cli.Flag{
+		cli.StringFlag{Name: "root, r",Value:"github.com/gofuncchan/ginger", Usage: "root package name"},
 		cli.StringFlag{Name: "module, m", Usage: "module name",},
 		cli.StringSliceFlag{Name: "func, f", Usage: "model function name,one or more"},
 	},
@@ -27,7 +28,7 @@ var ModelCommand = cli.Command{
 }
 
 func modelCommandAction(c *cli.Context) error {
-
+	root := c.String("root")
 	module := c.String("module")
 	fs := c.StringSlice("func")
 
@@ -48,7 +49,7 @@ func modelCommandAction(c *cli.Context) error {
 	}
 
 	// 设置输出
-	out, err := util.OutputFile(util.ModelOutput, module)
+	out, err := util.OutputFile(root,util.ModelPkgName, module)
 	if err != nil {
 		util.OutputWarn(err.Error())
 	}

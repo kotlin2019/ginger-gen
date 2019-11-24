@@ -1,7 +1,6 @@
 package util
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -35,7 +34,7 @@ const GitUrl = "https://github.com/gofuncchan/ginger.git"
 func GitClone(appName string) bool {
 	shellCmd := "`git clone " + GitUrl + " " + appName + "`"
 	OutputStep(shellCmd)
-	err, _, _ := ExecShellCommand(shellCmd)
+	err := ExecShellCommand(shellCmd)
 	if err != nil {
 		OutputError(err.Error())
 		return false
@@ -47,14 +46,12 @@ func GitClone(appName string) bool {
 
 const ShellToUse = "bash"
 
-func ExecShellCommand(command string) (error, string, string) {
-	var stdout bytes.Buffer
-	var stderr bytes.Buffer
+func ExecShellCommand(command string) (error) {
 	cmd := exec.Command(ShellToUse, "-c", command)
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stdout
 	err := cmd.Run()
-	return err, stdout.String(), stderr.String()
+	return err
 }
 
 // 判断目录是否存在
