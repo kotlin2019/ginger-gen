@@ -40,22 +40,25 @@ OPTIONS:
 
 ```
 
-This command will pull `github.com/gofuncchan/ginger` scaffold, it create project default directory.
+init 命令会拉取 `github.com/gofuncchan/ginger` 项目脚手架, 默认当前目录创建项目。
 
 Tips:
 
-- ginger use go module to manage package,you just do like this: `go mod tidy`,it will download dependency package to local.
-- you can also use vendor like this `go mod vendor`, it will copy downloaded package to current vendor directory.
-- use `-g` option to git init your project.
+- 由于ginger使用go module 管理依赖包，默认配置你的config就可以启动，`go build main.go`;
+- 默认根包为`github.com/gofuncchan/ginger`,如需更改请自行全局replace替换并修改go.mod文件；
+- 一旦替换根包，则该工具的多数命令都带-r 参数设置你的自定义根包，以便生成的代码与你的项目一致；
+- 如ide不能识别包，请使用`go mod tidy`和`go mod vendor`做本地化处理，
+- init 时可使用`-g` 选项自动git初始化
   
 #### Generate code
-ginger-cli provide many command to help you generate code,like:
+ginger-cli 提供多个命令方便你自动生成脚手架代码，如下：
 
-- handler function code
-- sql builder code for mysql
-- biz model code for mysql 
-- mongo repository code
-- redis cache code
+- handler 控制器相关代码
+- 基于didi/gendry 的sql builder，生成相关表的基本curd代码
+- 基于mysql的业务模型层代码
+- 基于mgo的数据存储层代码
+- 基于redis缓存层的代码
+- 根据yaml文件自动生成解析逻辑代码
 
 Use `ginger-cli [command] -h` to see command detail.
 
