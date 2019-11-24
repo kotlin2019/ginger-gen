@@ -86,7 +86,7 @@ func addModelImportContent(module string) io.Reader {
 	return bytes.NewBuffer([]byte(fmt.Sprintf(`package model
 
 import(
-    builder "github.com/gofuncchan/ginger/dao/mysql/%s_builder"
+	"github.com/gofuncchan/ginger/dao/mysql/%s"
     "github.com/gofuncchan/ginger/util/e"
 )
 
