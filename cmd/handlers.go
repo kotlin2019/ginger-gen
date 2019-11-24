@@ -24,7 +24,7 @@ var HandlerCommand = cli.Command{
 
 type handlerTmplData struct {
 	PackageName string
-	ModuleName    string
+	ModuleName  string
 	FuncName    string
 	StructName  string
 }
@@ -48,7 +48,7 @@ func handlerCommandAction(c *cli.Context) error {
 		// 	return err
 		// }
 
-		err = template.Must(template.ParseGlob(handlerTmplCode)).Execute(&buff, handlerTmplData{
+		err = template.Must(template.New("handler").Parse(handlerTmplCode)).Execute(&buff, handlerTmplData{
 			PackageName: "handler",
 			ModuleName:  module,
 			StructName:  f + "Params",
@@ -93,11 +93,10 @@ func outputHandlerTips(moduleName string, funcNames []string) string {
 
 }
 
-
-const handlerTmplCode  = `
+const handlerTmplCode = `
 // {{ .StructName }} is a mapping object for params in request
 type {{.StructName}} struct {
-// TODO your request params struct 
+	// TODO Set request params struct 
 }
 
 // {{ .FuncName }} is a handler function with gin framework
@@ -109,7 +108,7 @@ func {{ .FuncName }}(c *gin.Context){
         return
     }
 
-    // TODO your biz logic code ...
+    // TODO biz logic code ...
 
 }
 

@@ -37,7 +37,7 @@ func repoCommandAction(c *cli.Context) error {
 	for _, f := range fs {
 		var buff bytes.Buffer
 		// handler函数模板
-		err := template.Must(template.ParseFiles("./tmpl/repo.tmpl")).Execute(&buff, repoTmplData{
+		err := template.Must(template.New("repository").Parse(repoTmplCode)).Execute(&buff, repoTmplData{
 			CollectionName: module,
 			FuncName:       f,
 		})
@@ -81,3 +81,18 @@ func outputRepoTips(funcNames []string) string {
 	return header + examples + footer
 
 }
+
+const repoTmplCode  = `
+/*
+TODO Description: What does {{ .FuncName }}  do ...
+TODO reset this function input args and output args
+@param
+
+@return
+*/
+func {{ .FuncName }}(args... interface{}) (err error) {
+    // TODO your repository logic code for mongodb store ...
+
+    return nil
+}
+`

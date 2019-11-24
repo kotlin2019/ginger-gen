@@ -35,7 +35,7 @@ func modelCommandAction(c *cli.Context) error {
 	for _, f := range fs {
 		var buff bytes.Buffer
 		// handler函数模板
-		err := template.Must(template.ParseFiles("./tmpl/model.tmpl")).Execute(&buff, modelTmplData{
+		err := template.Must(template.New("model").Parse(modelTmplCode)).Execute(&buff, modelTmplData{
 			FuncName: f,
 		})
 		if err != nil {
@@ -80,3 +80,19 @@ func outputModelTips(funcNames []string) string {
 
 	return header + examples + footer
 }
+
+
+const modelTmplCode = `
+/*
+TODO Description: What does {{ .FuncName }}  do ...
+TODO reset this function input args and output args
+@param
+
+@return
+*/
+func {{ .FuncName }}(args... interface{}) (b bool) {
+    // TODO your model logic code for mysql store ...
+
+    return
+}
+`

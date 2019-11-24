@@ -35,7 +35,7 @@ func cacheCommandAction(c *cli.Context) error {
 	for _, f := range fs {
 		var buff bytes.Buffer
 		// handler函数模板
-		err := template.Must(template.ParseFiles("./tmpl/cache.tmpl")).Execute(&buff, cacheTmplData{
+		err := template.Must(template.New("cache").Parse(cacheTmplCode)).Execute(&buff, cacheTmplData{
 			FuncName:       f,
 		})
 		if err != nil {
@@ -78,3 +78,18 @@ func outputCacheTips(funcNames []string) string {
 	return header + examples + footer
 
 }
+
+const cacheTmplCode  = `
+/*
+TODO Description: What does {{ .FuncName }}  do ...
+TODO reset this function input args and output args
+@param
+
+@return
+*/
+func {{ .FuncName }}(args... interface{}) (b bool) {
+// TODO your cache logic code for redis store ...
+
+return
+}
+`
