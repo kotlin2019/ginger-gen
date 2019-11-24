@@ -34,18 +34,30 @@ func handlerCommandAction(c *cli.Context) error {
 	fs := c.StringSlice("func")
 
 	var buffs bytes.Buffer
+	var err error
 	for _, f := range fs {
 		var buff bytes.Buffer
 		// handler函数模板
-		err := template.Must(template.ParseFiles("./tmpl/handler.tmpl")).Execute(&buff, handlerTmplData{
+		// err = template.Must(template.ParseFiles("./tmpl/handler.tmpl")).Execute(&buff, handlerTmplData{
+		// 	PackageName: "handler",
+		// 	ModuleName:    module,
+		// 	StructName:  f + "Params",
+		// 	FuncName:    f,
+		// })
+		// if err != nil {
+		// 	return err
+		// }
+
+		err = template.Must(template.ParseGlob(handlerTmplCode)).Execute(&buff, handlerTmplData{
 			PackageName: "handler",
-			ModuleName:    module,
+			ModuleName:  module,
 			StructName:  f + "Params",
 			FuncName:    f,
 		})
 		if err != nil {
 			return err
 		}
+
 		io.Copy(&buffs, &buff)
 	}
 
@@ -80,3 +92,25 @@ func outputHandlerTips(moduleName string, funcNames []string) string {
 	return header + examples + footer
 
 }
+
+
+const handlerTmplCode  = `
+// {{ .StructName }} is a mapping object for params in request
+type {{.StructName}} struct {
+// TODO your request params struct 
+}
+
+// {{ .FuncName }} is a handler function with gin framework
+func {{ .FuncName }}(c *gin.Context){
+    // validate request params
+    form := new({{ .StructName }})
+    if err := c.ShouldBind(form); err != nil {
+        common.ResponseInvalidParam(c,err)
+        return
+    }
+
+    // TODO your biz logic code ...
+
+}
+
+`
