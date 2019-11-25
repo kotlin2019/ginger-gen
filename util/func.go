@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
+	"strings"
 	"syscall"
 )
 
@@ -29,10 +31,11 @@ func CheckDirMode() bool {
 	}
 }
 
+
 const GitUrl = "https://github.com/gofuncchan/ginger.git"
 
 func GitClone(appName string) bool {
-	shellCmd := "`git clone " + GitUrl + " " + appName + "`"
+	shellCmd := "`git clone -b master --single-branch --depth 1 " + GitUrl + " " + appName + "`"
 	OutputStep(shellCmd)
 	err := ExecShellCommand(shellCmd)
 	if err != nil {
@@ -43,6 +46,8 @@ func GitClone(appName string) bool {
 
 	return true
 }
+
+
 
 const ShellToUse = "bash"
 
@@ -62,4 +67,14 @@ func IsDir(path string) bool {
 		return false
 	}
 	return s.IsDir()
+}
+
+
+func GetMinVer(v string) (uint64, error) {
+	first := strings.IndexByte(v, '.')
+	last := strings.LastIndexByte(v, '.')
+	if first == last {
+		return strconv.ParseUint(v[first+1:], 10, 64)
+	}
+	return strconv.ParseUint(v[first+1:last], 10, 64)
 }
