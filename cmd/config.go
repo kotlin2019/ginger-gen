@@ -25,9 +25,9 @@ var subCommandParse = cli.Command{
 	UsageText:   "",
 	Description: "generate config parse code for yaml",
 	Flags: []cli.Flag{
-		cli.StringFlag{Name: "path, p", Value: "config",Usage:"yaml config file path"},
-		cli.StringFlag{Name:"env, e",Value:"debug",Usage:"what env directory"},
-		cli.StringFlag{Name:"file, f",Usage:"yaml file name"},
+		cli.StringFlag{Name: "path, p", Value: "config", Usage: "yaml config file path"},
+		cli.StringFlag{Name: "env, e", Value: "debug", Usage: "what env directory"},
+		cli.StringFlag{Name: "file, f", Usage: "yaml file name"},
 	},
 	Action: subCommandParseAction,
 }
@@ -37,7 +37,7 @@ func subCommandParseAction(c *cli.Context) error {
 	envDir := c.String("env")
 	fileName := c.String("file")
 
-	target := configPath + "/" + envDir + "/" +fileName + ".yaml"
+	target := configPath + "/" + envDir + "/" + fileName + ".yaml"
 
 	baseConfFile, err := ioutil.ReadFile(target)
 	if err != nil {
@@ -53,13 +53,18 @@ func subCommandParseAction(c *cli.Context) error {
 
 	structName := util.CamelString(fileName)
 
-	structCode,err := convertMapToStructCode(structName,configMap)
+	structCode, err := convertMapToStructCode(structName, configMap)
 	if err != nil {
 		return err
 	}
 
+	if len(innerStructCodeList) >0 {
+		for _,innerStructCode := range innerStructCodeList{
+			structCode += innerStructCode
+		}
+	}
 
-	outputStr := fmt.Sprintf(`This code is generated with ginger-cli.
+		outputStr := fmt.Sprintf(`This code is generated with ginger-cli.
 
 Please copy the following code to /config/parse_config.go:
 %s
@@ -75,22 +80,38 @@ func Init(){
 
 // ...
 }
-`,structCode,structName,structName,structName,fileName,structName,structName)
+`, structCode, structName, structName, structName, fileName, structName, structName)
 
-	util.OutputInfo("Generate Successful",outputStr )
+	util.OutputInfo("Generate Successful", outputStr)
 
 	return nil
 }
 
-func convertMapToStructCode(structName string,configMap map[interface{}]interface{}) (structCode string,err error) {
+// 嵌入map 转struct代码的容器
+var innerStructCodeList []string
+
+// 转换map为struct代码
+func convertMapToStructCode(structName string, configMap map[interface{}]interface{}) (structCode string, err error) {
 
 	var fieldList string
-	for k,v := range configMap {
+	for k, v := range configMap {
+		var line string
 		fieldName := k.(string)
-		fieldType := reflect.TypeOf(v).Name()
-		fieldTag := "`yaml:\""+fieldName +"\"`"
-		line := fmt.Sprintf(`%s %s %s
-	`,util.CamelString(fieldName),fieldType,fieldTag)
+		fieldType := reflect.TypeOf(v)
+		if fieldType.String() == `map[interface {}]interface {}` {
+			innerStructName := k.(string)
+			innerMap := v.(map[interface{}]interface{})
+			innerStructCode, err := convertMapToStructCode(util.CamelString(innerStructName), innerMap)
+			innerStructCodeList = append(innerStructCodeList, innerStructCode)
+			if err != nil {
+				return "", err
+			}
+			line = fmt.Sprintf("%s \n\t", util.CamelString(innerStructName))
+		} else {
+			fieldTag := "`yaml:\"" + fieldName + "\"`"
+			line = fmt.Sprintf("%s %s %s \n\t", util.CamelString(fieldName), fieldType, fieldTag)
+		}
+
 		fieldList += line
 	}
 
@@ -98,8 +119,7 @@ func convertMapToStructCode(structName string,configMap map[interface{}]interfac
 type %s struct{
 	%s
 }
-`,structName,fieldList)
+`, structName, fieldList)
 
-
-	return structCode,nil
+	return structCode, nil
 }
