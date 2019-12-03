@@ -58,13 +58,13 @@ func subCommandParseAction(c *cli.Context) error {
 		return err
 	}
 
-	if len(innerStructCodeList) >0 {
-		for _,innerStructCode := range innerStructCodeList{
+	if len(innerStructCodeList) > 0 {
+		for _, innerStructCode := range innerStructCodeList {
 			structCode += innerStructCode
 		}
 	}
 
-		outputStr := fmt.Sprintf(`This code is generated with ginger-cli.
+	outputStr := fmt.Sprintf(`This code is generated with ginger-cli.
 
 Please copy the following code to /config/parse_config.go:
 %s
@@ -98,16 +98,30 @@ func convertMapToStructCode(structName string, configMap map[interface{}]interfa
 		var line string
 		fieldName := k.(string)
 		fieldType := reflect.TypeOf(v)
+		// fmt.Println("fieldType:", fieldType)
 		if fieldType.String() == `map[interface {}]interface {}` {
-			innerStructName := k.(string)
+			// 转换map
+			innerMapStructName := k.(string)
 			innerMap := v.(map[interface{}]interface{})
-			innerStructCode, err := convertMapToStructCode(util.CamelString(innerStructName), innerMap)
+			innerStructCode, err := convertMapToStructCode(util.CamelString(innerMapStructName), innerMap)
 			innerStructCodeList = append(innerStructCodeList, innerStructCode)
 			if err != nil {
 				return "", err
 			}
-			line = fmt.Sprintf("%s \n\t", util.CamelString(innerStructName))
+			fieldTag := "`yaml:\"" + fieldName + "\"`"
+			line = fmt.Sprintf("%s %s \n\t", util.CamelString(innerMapStructName),fieldTag)
+		} else if fieldType.String() == `[]interface {}` {
+			// 转换slice
+			innerSlice := v.([]interface{})
+			innerSliceElementStructCode, err := converSliceElementToStructCode(fieldName, innerSlice)
+			if err != nil {
+				return "", err
+			}
+			innerStructCodeList = append(innerStructCodeList, innerSliceElementStructCode)
+			fieldTag := "`yaml:\"" + fieldName + "\"`"
+			line = fmt.Sprintf("%s []%s %s\n\t", util.CamelString(fieldName)+"s" ,util.CamelString(fieldName),fieldTag)
 		} else {
+			// 一般字段值
 			fieldTag := "`yaml:\"" + fieldName + "\"`"
 			line = fmt.Sprintf("%s %s %s \n\t", util.CamelString(fieldName), fieldType, fieldTag)
 		}
@@ -122,4 +136,19 @@ type %s struct{
 `, structName, fieldList)
 
 	return structCode, nil
+}
+
+// 转换slice元素为struct代码
+func converSliceElementToStructCode(sliceKeyName string, configSlice []interface{}) (structCode string, err error) {
+	element := configSlice[0]
+	var innerStructCode string
+	elementType := reflect.TypeOf(element)
+	if elementType.String() == `map[interface {}]interface {}` {
+		elementMap := element.(map[interface{}]interface{})
+		innerStructCode, err = convertMapToStructCode(util.CamelString(sliceKeyName), elementMap)
+		if err != nil {
+			return "", err
+		}
+	}
+	return innerStructCode, nil
 }

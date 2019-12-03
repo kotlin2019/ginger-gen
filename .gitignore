@@ -22,4 +22,5 @@ go.sum
 
 #demo
 /app
+/config
 ginger_cli
