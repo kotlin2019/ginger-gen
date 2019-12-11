@@ -24,3 +24,4 @@ go.sum
 /app
 /config
 ginger_cli
+main
