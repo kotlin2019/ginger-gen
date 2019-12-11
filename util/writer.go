@@ -86,7 +86,7 @@ func addModelImportContent(root string,module string) io.Reader {
 	return bytes.NewBuffer([]byte(fmt.Sprintf(`package model
 
 import(
-	"%s/dao/mysql/%s"
+	"%s/dao/mysql/schema"
     "%s/util/e"
 )
 
@@ -114,7 +114,7 @@ func CreateUserByPhone(name, phone, passwd, salt string) int64 {
 
 */
 
-	`,root,module,root)))
+	`,root,root)))
 }
 
 func addRepoImportContent(root,module string) io.Reader {

@@ -55,6 +55,10 @@ replace go.uber.org/multierr => github.com/uber-go/multierr v1.4.0
 replace go.uber.org/tools => github.com/uber-go/tools v0.0.0-20190618225709-2cfd321de3ee
 
 require (
+	github.com/didi/gendry v1.3.1
+	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gofuncchan/ginger-forge v0.0.0-20191114173318-6e7ec8a9fc06
+	github.com/stretchr/testify v1.4.0
 	github.com/urfave/cli v1.22.1
+	gopkg.in/yaml.v2 v2.2.2
 )
