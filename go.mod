@@ -1,10 +1,10 @@
-module github.com/gofuncchan/ginger-cli
+module github.com/gofuncchan/ginger-gen
 
 go 1.12
 
 replace github.com/gofuncchan/ginger => /Users/fun/Code/go/src/github.com/gofuncchan/ginger
 
-replace github.com/gofuncchan/ginger-cli => /Users/fun/Code/go/src/github.com/gofuncchan/ginger-cli
+replace github.com/gofuncchan/ginger-gen => /Users/fun/Code/go/src/github.com/gofuncchan/ginger-gen
 
 replace github.com/gofuncchan/ginger-forge => /Users/fun/Code/go/src/github.com/gofuncchan/ginger-forge
 

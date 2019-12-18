@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"bytes"
-	libSchema "github.com/gofuncchan/ginger-cli/lib/schema"
+	libSchema "github.com/gofuncchan/ginger-gen/lib/schema"
 	"github.com/urfave/cli"
 	"io"
 )
@@ -10,7 +10,7 @@ import (
 var MysqlCommand = cli.Command{
 	Name:        "mysql",
 	Usage:       "generate dao code",
-	UsageText:   "ginger-cli mysql [sub-command] [option]",
+	UsageText:   "ginger-gen mysql [sub-command] [option]",
 	Description: "generate sql builder code for dao which fork didi/gendry",
 	Subcommands: []cli.Command{
 		subCommandSchema,

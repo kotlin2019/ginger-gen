@@ -3,7 +3,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"github.com/gofuncchan/ginger-cli/util"
+	"github.com/gofuncchan/ginger-gen/util"
 	"github.com/urfave/cli"
 	"io"
 	"text/template"
@@ -17,7 +17,7 @@ type modelTmplData struct {
 var ModelCommand = cli.Command{
 	Name:        "model",
 	Usage:       "generate biz logic model function code for mysql builder",
-	UsageText:   "ginger-cli model [option]",
+	UsageText:   "ginger-gen model [option]",
 	Description: "generate biz logic model function code for mysql builder",
 	Flags: []cli.Flag{
 		cli.StringFlag{Name: "root, r",Value:"github.com/gofuncchan/ginger", Usage: "root package name"},

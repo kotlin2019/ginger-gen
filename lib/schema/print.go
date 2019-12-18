@@ -3,7 +3,7 @@ package schema
 import (
 	"errors"
 	"fmt"
-	"github.com/gofuncchan/ginger-cli/util"
+	"github.com/gofuncchan/ginger-gen/util"
 )
 
 func OutputStep(msg string) {

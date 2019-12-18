@@ -4,7 +4,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"github.com/gofuncchan/ginger-cli/util"
+	"github.com/gofuncchan/ginger-gen/util"
 	"github.com/urfave/cli"
 	"io"
 	"text/template"
@@ -14,7 +14,7 @@ import (
 var RepoCommand = cli.Command{
 	Name:        "repo",
 	Usage:       "generate repo file and function code for mongodb repository",
-	UsageText:   "ginger-cli repo [option]",
+	UsageText:   "ginger-gen repo [option]",
 	Description: "generate repo file and function code for mongodb repository",
 	Flags: []cli.Flag{
 		cli.StringFlag{Name: "root, r",Value:"github.com/gofuncchan/ginger", Usage: "root package name"},

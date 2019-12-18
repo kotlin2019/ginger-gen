@@ -3,7 +3,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"github.com/gofuncchan/ginger-cli/util"
+	"github.com/gofuncchan/ginger-gen/util"
 	"github.com/urfave/cli"
 	"io"
 	"text/template"
@@ -13,7 +13,7 @@ import (
 var HandlerCommand = cli.Command{
 	Name:        "handler",
 	Usage:       "generate handler function code",
-	UsageText:   "ginger-cli handler [option]",
+	UsageText:   "ginger-gen handler [option]",
 	Description: "generate handler function code and request params validator struct",
 	Flags: []cli.Flag{
 		cli.StringFlag{Name: "root, r",Value:"github.com/gofuncchan/ginger", Usage: "root package name"},
