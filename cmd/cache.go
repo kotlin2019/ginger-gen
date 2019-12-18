@@ -3,7 +3,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"github.com/gofuncchan/ginger-cli/util"
+	"github.com/gofuncchan/ginger-gen/util"
 	"github.com/urfave/cli"
 	"io"
 	"text/template"
@@ -13,7 +13,7 @@ import (
 var CacheCommand = cli.Command{
 	Name:        "cache",
 	Usage:       "generate cache function code",
-	UsageText:   "ginger-cli cache [option]",
+	UsageText:   "ginger-gen cache [option]",
 	Description: "generate cache function code ",
 	Flags: []cli.Flag{
 		cli.StringFlag{Name: "root, r",Value:"github.com/gofuncchan/ginger", Usage: "root package name"},

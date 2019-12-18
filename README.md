@@ -1,8 +1,8 @@
-# ginger-cli
-A client for ginger scaffold
+# ginger-gen
+A Code Generator for ginger scaffold
 
 ### Install 
-`go get -u github.com/gofuncchan/ginger-cli`
+`go get -u github.com/gofuncchan/ginger-gen`
 
 ### Commands:
 
@@ -26,10 +26,10 @@ GLOBAL OPTIONS:
 #### init project
 ```
 NAME:
-   ginger-cli init - ginger app init.
+   ginger-gen init - ginger app init.
 
 USAGE:
-   ginger-cli init [--name|-n] [project_name]
+   ginger-gen init [--name|-n] [project_name]
 
 DESCRIPTION:
    The init command create a new gin application in current directory，this command will generate some necessary folders and files,which make up project scaffold.
@@ -51,7 +51,7 @@ Tips:
 - init 时可使用`-g` 选项自动git初始化
   
 #### Generate code
-ginger-cli 提供多个命令方便你自动生成脚手架代码，如下：
+ginger-gen 提供多个命令方便你自动生成脚手架代码，如下：
 
 - handler 控制器相关代码
 - 基于didi/gendry 的sql builder，生成相关表的基本curd代码
@@ -60,5 +60,5 @@ ginger-cli 提供多个命令方便你自动生成脚手架代码，如下：
 - 基于redis缓存层的代码
 - 根据yaml文件自动生成解析逻辑代码
 
-Use `ginger-cli [command] -h` to see command detail.
+Use `ginger-gen [command] -h` to see command detail.
 

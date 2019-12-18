@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/gofuncchan/ginger-cli/util"
+	"github.com/gofuncchan/ginger-gen/util"
 	"github.com/urfave/cli"
 	"os"
 	"runtime"
@@ -10,7 +10,7 @@ import (
 var InitCommand = cli.Command{
 	Name:        "init",
 	Usage:       "ginger app init.",
-	UsageText:   "ginger-cli init [--name|-n] [project_name]",
+	UsageText:   "ginger-gen init [--name|-n] [project_name]",
 	Description: "The init command create a new gin application in current directory，this command will generate some necessary folders and files,which make up project scaffold.",
 	Flags: []cli.Flag{
 		cli.StringFlag{Name: "name, n", Usage: "project name"},

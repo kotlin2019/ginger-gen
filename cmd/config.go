@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/gofuncchan/ginger-cli/util"
+	"github.com/gofuncchan/ginger-gen/util"
 	"github.com/urfave/cli"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -13,7 +13,7 @@ import (
 var ConfigCommand = cli.Command{
 	Name:        "config",
 	Usage:       "generate config parse code for yaml file ",
-	UsageText:   "ginger-cli config [sub-command] [option]",
+	UsageText:   "ginger-gen config [sub-command] [option]",
 	Description: "generate config init code for yaml config file",
 	Subcommands: []cli.Command{
 		subCommandParse,
@@ -64,7 +64,7 @@ func subCommandParseAction(c *cli.Context) error {
 		}
 	}
 
-	outputStr := fmt.Sprintf(`This code is generated with ginger-cli.
+	outputStr := fmt.Sprintf(`This code is generated with ginger-gen.
 
 Please copy the following code to /config/parse_config.go:
 %s

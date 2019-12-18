@@ -75,7 +75,7 @@ import(
 )
 
 /*
-This code is generated with ginger-cli.
+This code is generated with ginger-gen.
 You must reset Request Params, and implement biz logic code.
 */
 
@@ -91,7 +91,7 @@ import(
 )
 
 /*
-This code is generated with ginger-cli.
+This code is generated with ginger-gen.
 You should handling errors in model function,and return data or result to caller.
 
 For example:
@@ -127,7 +127,7 @@ import(
 )
 
 /*
-This code is generated with ginger-cli.
+This code is generated with ginger-gen.
 You should handling errors in repository function,and return data or result to caller.
 
 For example:
@@ -160,7 +160,7 @@ import(
 )
 
 /*
-This code is generated with ginger-cli.
+This code is generated with ginger-gen.
 You should handling errors in cache function,and return data or result to caller.
 
 For example:
