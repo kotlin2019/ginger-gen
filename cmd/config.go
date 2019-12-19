@@ -98,7 +98,7 @@ func convertMapToStructCode(structName string, configMap map[interface{}]interfa
 		var line string
 		fieldName := k.(string)
 		fieldType := reflect.TypeOf(v)
-		// fmt.Println("fieldType:", fieldType)
+		fmt.Println("key:", k, "fieldType:", fieldType)
 		if fieldType.String() == `map[interface {}]interface {}` {
 			// 转换map
 			innerMapStructName := k.(string)
@@ -109,17 +109,29 @@ func convertMapToStructCode(structName string, configMap map[interface{}]interfa
 				return "", err
 			}
 			fieldTag := "`yaml:\"" + fieldName + "\"`"
-			line = fmt.Sprintf("%s %s \n\t", util.CamelString(innerMapStructName),fieldTag)
+			line = fmt.Sprintf("%s %s \n\t", util.CamelString(innerMapStructName), fieldTag)
 		} else if fieldType.String() == `[]interface {}` {
-			// 转换slice
+			// 转换slice,可转换[]string/[]int/[]bool/[]map[interface{}]interface{}
 			innerSlice := v.([]interface{})
-			innerSliceElementStructCode, err := converSliceElementToStructCode(fieldName, innerSlice)
-			if err != nil {
-				return "", err
+			switch innerSlice[0].(type) {
+			case string:
+				fieldTag := "`yaml:\"" + fieldName + "\"`"
+				line = fmt.Sprintf("%s []string %s \n\t", util.CamelString(fieldName), fieldTag)
+			case int:
+				fieldTag := "`yaml:\"" + fieldName + "\"`"
+				line = fmt.Sprintf("%s []int %s \n\t", util.CamelString(fieldName), fieldTag)
+			case bool:
+				fieldTag := "`yaml:\"" + fieldName + "\"`"
+				line = fmt.Sprintf("%s []bool %s \n\t", util.CamelString(fieldName), fieldTag)
+			case map[interface{}]interface{}:
+				innerSliceElementStructCode, err := converSliceElementToStructCode(fieldName, innerSlice)
+				if err != nil {
+					return "", err
+				}
+				innerStructCodeList = append(innerStructCodeList, innerSliceElementStructCode)
+				fieldTag := "`yaml:\"" + fieldName + "\"`"
+				line = fmt.Sprintf("%s []%s %s\n\t", util.CamelString(fieldName)+"s", util.CamelString(fieldName), fieldTag)
 			}
-			innerStructCodeList = append(innerStructCodeList, innerSliceElementStructCode)
-			fieldTag := "`yaml:\"" + fieldName + "\"`"
-			line = fmt.Sprintf("%s []%s %s\n\t", util.CamelString(fieldName)+"s" ,util.CamelString(fieldName),fieldTag)
 		} else {
 			// 一般字段值
 			fieldTag := "`yaml:\"" + fieldName + "\"`"
