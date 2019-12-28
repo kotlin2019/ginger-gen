@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"bytes"
-	libSchema "github.com/gofuncchan/ginger-gen/lib/schema"
+	libSchema "github.com/gofuncchan/ginger-gen/schemaLib/schema"
 	"github.com/urfave/cli"
 	"io"
 )

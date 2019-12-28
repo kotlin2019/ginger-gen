@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/gofuncchan/ginger-gen/util"
+	"github.com/gofuncchan/ginger-gen/writer"
 	"github.com/urfave/cli"
 	"io"
 	"text/template"
@@ -54,7 +55,7 @@ func handlerCommandAction(c *cli.Context) error {
 	}
 
 	// 设置输出
-	out, err := util.OutputFile(root,util.HandlerPkgName, module)
+	out, err := writer.OutputHandlerFile(root, module)
 	if err != nil {
 		util.OutputWarn(err.Error())
 	}
