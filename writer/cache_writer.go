@@ -7,18 +7,19 @@ import (
 	"os"
 )
 
-
 // 输出
 func OutputCacheFile(root, module string) (io.Writer, error) {
+	packName := module + "Cache"
+
 	// 创建输出目录
-	err := os.MkdirAll("cache/"+module+"Cache", 0755)
+	err := os.MkdirAll("cache/"+packName, 0755)
 	if err != nil {
 		// 如目录创建失败，则标准输出
 		return os.Stdout, err
 	}
 
 	// 如: /cache/tokenCache/token_cache.go
-	filename := "cache/" + module + "Cache/" + module + "_cache.go"
+	filename := "cache/" + packName + "/" + module + "_cache.go"
 
 	// 创建输出的目录并创建输出的go文件
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
@@ -31,7 +32,7 @@ func OutputCacheFile(root, module string) (io.Writer, error) {
 	var std = os.Stdout
 	var out io.Reader
 	if os.IsNotExist(err) {
-		out = addCacheImportContent(root)
+		out = addCacheImportContent(root,packName)
 		file, err = os.Create(filename)
 		if err != nil {
 			io.Copy(std, out)
@@ -45,11 +46,8 @@ func OutputCacheFile(root, module string) (io.Writer, error) {
 	return std, err
 }
 
-
-
-
-func addCacheImportContent(root string) io.Reader {
-	return bytes.NewBuffer([]byte(fmt.Sprintf(`package cache
+func addCacheImportContent(root,packName string) io.Reader {
+	return bytes.NewBuffer([]byte(fmt.Sprintf(`package %s
 
 import(
 	redigo "github.com/garyburd/redigo/redis"
@@ -69,5 +67,5 @@ func SetKey(key, value string) bool {
 
 */
 
-	`,root)))
+	`, packName,root)))
 }

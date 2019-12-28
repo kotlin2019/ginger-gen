@@ -50,7 +50,7 @@ func modelCommandAction(c *cli.Context) error {
 	}
 
 	// 设置输出
-	out, err := writer.OutputModleFile(root, module)
+	out, err := writer.OutputModelFile(root, module)
 	if err != nil {
 		util.OutputWarn(err.Error())
 	}

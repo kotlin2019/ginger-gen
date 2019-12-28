@@ -8,18 +8,19 @@ import (
 	"os"
 )
 
-
 // 输出
 func OutputRepoFile(root, module string) (io.Writer, error) {
+	packName := module + "Repo"
+
 	// 创建输出目录
-	err := os.MkdirAll("repository/"+module+"Repo", 0755)
+	err := os.MkdirAll("repository/"+packName, 0755)
 	if err != nil {
 		// 如目录创建失败，则标准输出
 		return os.Stdout, err
 	}
 
 	// 如: /repository/logRepo/log_repository.go
-	filename := "repository/" + module + "Repo/" + module + "_repository.go"
+	filename := "repository/" + packName + "/" + module + "_repository.go"
 
 	// 创建输出的目录并创建输出的go文件
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
@@ -32,7 +33,7 @@ func OutputRepoFile(root, module string) (io.Writer, error) {
 	var std = os.Stdout
 	var out io.Reader
 	if os.IsNotExist(err) {
-		out = addRepoImportContent(root, module)
+		out = addRepoImportContent(root, packName,module)
 		file, err = os.Create(filename)
 		if err != nil {
 			io.Copy(std, out)
@@ -46,9 +47,8 @@ func OutputRepoFile(root, module string) (io.Writer, error) {
 	return std, err
 }
 
-
-func addRepoImportContent(root,module string) io.Reader {
-	return bytes.NewBuffer([]byte(fmt.Sprintf(`package repository
+func addRepoImportContent(root, packName,module string) io.Reader {
+	return bytes.NewBuffer([]byte(fmt.Sprintf(`package %s
 
 import(
    	mongo "%s/dao/mongodb"
@@ -77,5 +77,5 @@ func InsertPost(dataMap map[string]interface{}) (b bool) {
 
 const Mongo%sCollection = "%s"
 
-	`,root,root,util.CamelString(module),module)))
+	`,packName, root, root, util.CamelString(module), module)))
 }

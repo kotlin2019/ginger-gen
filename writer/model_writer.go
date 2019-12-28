@@ -8,16 +8,17 @@ import (
 )
 
 // 输出
-func OutputModleFile(root, module string) (io.Writer, error) {
+func OutputModelFile(root, module string) (io.Writer, error) {
+	packName := module+"Model"
 	// 创建输出目录
-	err := os.MkdirAll("model/"+module+"Model", 0755)
+	err := os.MkdirAll("model/"+packName, 0755)
 	if err != nil {
 		// 如目录创建失败，则标准输出
 		return os.Stdout, err
 	}
 
 	// 如: /model/userModel/user_model.go
-	filename := "model/" + module + "Model/" + module + "_model.go"
+	filename := "model/" + packName + "/" + module + "_model.go"
 
 	// 创建输出的目录并创建输出的go文件
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
@@ -30,7 +31,7 @@ func OutputModleFile(root, module string) (io.Writer, error) {
 	var std = os.Stdout
 	var out io.Reader
 	if os.IsNotExist(err) {
-		out = addModelImportContent(root, module)
+		out = addModelImportContent(root, packName)
 		file, err = os.Create(filename)
 		if err != nil {
 			io.Copy(std, out)
@@ -44,8 +45,8 @@ func OutputModleFile(root, module string) (io.Writer, error) {
 	return std, err
 }
 
-func addModelImportContent(root string, module string) io.Reader {
-	return bytes.NewBuffer([]byte(fmt.Sprintf(`package model
+func addModelImportContent(root, packName string) io.Reader {
+	return bytes.NewBuffer([]byte(fmt.Sprintf(`package %s
 
 import(
 	"%s/dao/mysql/schema"
@@ -76,5 +77,5 @@ func CreateUserByPhone(name, phone, passwd, salt string) int64 {
 
 */
 
-	`, root, root)))
+	`, packName,root, root)))
 }
