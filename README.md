@@ -8,12 +8,13 @@ A Code Generator for ginger scaffold
 
 ```
    init     ginger app init.
-   mysql    generate dao code
+   schema   generate mysql table schema to go struct
    handler  generate handler function code
    model    generate biz logic model function code for mysql builder
    repo     generate repo file and function code for mongodb repository
    cache    generate cache function code
    config   generate config parse code for yaml file 
+   module   generate CURD actions for a module
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
