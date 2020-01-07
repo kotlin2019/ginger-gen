@@ -12,7 +12,7 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "ginger-gen"
-	app.Version = "0.3.0"
+	app.Version = "1.0.0"
 	app.Compiled = time.Now()
 	app.Usage = "A client of ginger scaffold."
 	app.UsageText = "ginger-gen [option] [command] [args]"
@@ -31,6 +31,7 @@ func main() {
 		cmd.RepoCommand,
 		cmd.CacheCommand,
 		cmd.ConfigCommand,
+		cmd.ModuleCommand,
 	}
 
 	err := app.Run(os.Args)

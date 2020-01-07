@@ -3,8 +3,9 @@ package cmd
 import (
 	"bytes"
 	"fmt"
+	libHandler "github.com/gofuncchan/ginger-gen/lib/handler"
 	"github.com/gofuncchan/ginger-gen/util"
-	"github.com/gofuncchan/ginger-gen/writer"
+	"github.com/gofuncchan/ginger-gen/xprint"
 	"github.com/urfave/cli"
 	"io"
 	"text/template"
@@ -55,9 +56,9 @@ func handlerCommandAction(c *cli.Context) error {
 	}
 
 	// 设置输出
-	out, err := writer.OutputHandlerFile(root, module)
+	out, err := libHandler.OutputHandlerFile(root, module)
 	if err != nil {
-		util.OutputWarn(err.Error())
+		xprint.Warn(err.Error())
 	}
 
 	_, err = io.Copy(out, &buffs)
@@ -66,7 +67,7 @@ func handlerCommandAction(c *cli.Context) error {
 	}
 
 	// stdout 输出router代码设置
-	util.OutputInfo("Generate Successful", outputHandlerTips(module, fs))
+	xprint.Info("Generate Successful", outputHandlerTips(module, fs))
 
 	return nil
 }

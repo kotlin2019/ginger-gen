@@ -13,13 +13,13 @@ import (
 
 const (
 	cDefaultTable = "COLUMNS"
-	cTimeFormat   = "2006-01-02 15:04:05"
+	// cTimeFormat   = "2006-01-02 15:04:05"
 )
 
-type columnSlice []column
+type ColumnSlice []Column
 
 // 读取数据库schema表结构表，获取表结构的列信息
-func readTableStruct(db *sql.DB, tableName string, dbName string) (columnSlice, error) {
+func readTableStruct(db *sql.DB, tableName string, dbName string) (ColumnSlice, error) {
 	var where = map[string]interface{}{
 		"TABLE_NAME":   tableName,
 		"TABLE_SCHEMA": dbName,
@@ -34,7 +34,7 @@ func readTableStruct(db *sql.DB, tableName string, dbName string) (columnSlice, 
 		return nil, err
 	}
 	defer rows.Close()
-	var ts columnSlice
+	var ts ColumnSlice
 	scanner.SetTagName("json")
 	err = scanner.Scan(rows, &ts)
 	if nil != err {
@@ -44,7 +44,7 @@ func readTableStruct(db *sql.DB, tableName string, dbName string) (columnSlice, 
 }
 
 // 根据表列结构信息生成go结构体源码
-func createStructSourceCode(cols columnSlice, tableName string) (io.Reader, string, error) {
+func createStructSourceCode(cols ColumnSlice, tableName string) (io.Reader, string, error) {
 	structName := ConvertUnderScoreToCamel(tableName)
 	fillData := sourceCode{
 		packageName:tableName,

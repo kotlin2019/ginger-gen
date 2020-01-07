@@ -1,4 +1,4 @@
-package util
+package xprint
 
 // 设置颜色输出
 var (

@@ -2,11 +2,12 @@ package cmd
 
 import (
 	"fmt"
+	libConfig "github.com/gofuncchan/ginger-gen/lib/config"
 	"github.com/gofuncchan/ginger-gen/util"
+	"github.com/gofuncchan/ginger-gen/xprint"
 	"github.com/urfave/cli"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"reflect"
 )
 
 // 根据config 配置文件生成配置参数解析代码
@@ -53,13 +54,13 @@ func subCommandParseAction(c *cli.Context) error {
 
 	structName := util.CamelString(fileName)
 
-	structCode, err := convertMapToStructCode(structName, configMap)
+	structCode, err := libConfig.ConvertMapToStructCode(structName, configMap)
 	if err != nil {
 		return err
 	}
 
-	if len(innerStructCodeList) > 0 {
-		for _, innerStructCode := range innerStructCodeList {
+	if len(libConfig.InnerStructCodeList) > 0 {
+		for _, innerStructCode := range libConfig.InnerStructCodeList {
 			structCode += innerStructCode
 		}
 	}
@@ -82,85 +83,7 @@ func Init(){
 }
 `, structCode, structName, structName, structName, fileName, structName, structName)
 
-	util.OutputInfo("Generate Successful", outputStr)
+	xprint.Info("Generate Successful", outputStr)
 
 	return nil
-}
-
-// 嵌入map 转struct代码的容器
-var innerStructCodeList []string
-
-// 转换map为struct代码
-func convertMapToStructCode(structName string, configMap map[interface{}]interface{}) (structCode string, err error) {
-
-	var fieldList string
-	for k, v := range configMap {
-		var line string
-		fieldName := k.(string)
-		fieldType := reflect.TypeOf(v)
-		fmt.Println("key:", k, "fieldType:", fieldType)
-		if fieldType.String() == `map[interface {}]interface {}` {
-			// 转换map
-			innerMapStructName := k.(string)
-			innerMap := v.(map[interface{}]interface{})
-			innerStructCode, err := convertMapToStructCode(util.CamelString(innerMapStructName), innerMap)
-			innerStructCodeList = append(innerStructCodeList, innerStructCode)
-			if err != nil {
-				return "", err
-			}
-			fieldTag := "`yaml:\"" + fieldName + "\"`"
-			line = fmt.Sprintf("%s %s \n\t", util.CamelString(innerMapStructName), fieldTag)
-		} else if fieldType.String() == `[]interface {}` {
-			// 转换slice,可转换[]string/[]int/[]bool/[]map[interface{}]interface{}
-			innerSlice := v.([]interface{})
-			switch innerSlice[0].(type) {
-			case string:
-				fieldTag := "`yaml:\"" + fieldName + "\"`"
-				line = fmt.Sprintf("%s []string %s \n\t", util.CamelString(fieldName), fieldTag)
-			case int:
-				fieldTag := "`yaml:\"" + fieldName + "\"`"
-				line = fmt.Sprintf("%s []int %s \n\t", util.CamelString(fieldName), fieldTag)
-			case bool:
-				fieldTag := "`yaml:\"" + fieldName + "\"`"
-				line = fmt.Sprintf("%s []bool %s \n\t", util.CamelString(fieldName), fieldTag)
-			case map[interface{}]interface{}:
-				innerSliceElementStructCode, err := converSliceElementToStructCode(fieldName, innerSlice)
-				if err != nil {
-					return "", err
-				}
-				innerStructCodeList = append(innerStructCodeList, innerSliceElementStructCode)
-				fieldTag := "`yaml:\"" + fieldName + "\"`"
-				line = fmt.Sprintf("%s []%s %s\n\t", util.CamelString(fieldName)+"s", util.CamelString(fieldName), fieldTag)
-			}
-		} else {
-			// 一般字段值
-			fieldTag := "`yaml:\"" + fieldName + "\"`"
-			line = fmt.Sprintf("%s %s %s \n\t", util.CamelString(fieldName), fieldType, fieldTag)
-		}
-
-		fieldList += line
-	}
-
-	structCode = fmt.Sprintf(`
-type %s struct{
-	%s
-}
-`, structName, fieldList)
-
-	return structCode, nil
-}
-
-// 转换slice元素为struct代码
-func converSliceElementToStructCode(sliceKeyName string, configSlice []interface{}) (structCode string, err error) {
-	element := configSlice[0]
-	var innerStructCode string
-	elementType := reflect.TypeOf(element)
-	if elementType.String() == `map[interface {}]interface {}` {
-		elementMap := element.(map[interface{}]interface{})
-		innerStructCode, err = convertMapToStructCode(util.CamelString(sliceKeyName), elementMap)
-		if err != nil {
-			return "", err
-		}
-	}
-	return innerStructCode, nil
 }

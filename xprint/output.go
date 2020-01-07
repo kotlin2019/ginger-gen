@@ -1,31 +1,31 @@
-package util
+package xprint
 
 import (
 	"errors"
 	"fmt"
 )
 
-func OutputStep(msg string) {
+func Step(msg string) {
 	fmt.Printf("%s💡%s %s\n", Blue, Reset, msg )
 }
 
-func OutputOk(msg string) {
+func Ok(msg string) {
 	output(Green, "[OK]", msg)
 }
 
-func OutputInfo(title, msg string) {
+func Info(title, msg string) {
 	output(Blue, "[INFO]", title+":"+msg)
 }
 
-func OutputWarn(msg string) {
+func Warn(msg string) {
 	output(Yellow, "[WARNING]️", msg)
 }
 
-func OutputError(msg string) error {
+func Error(msg string) error {
 	return errors.New(soutput(Red, "[ERROR]", msg))
 }
 
-func OutputFail(msg string) error {
+func Fail(msg string) error {
 	return errors.New(soutput(Red, "[FAIL]", msg))
 }
 

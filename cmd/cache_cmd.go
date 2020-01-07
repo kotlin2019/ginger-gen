@@ -3,8 +3,8 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"github.com/gofuncchan/ginger-gen/util"
-	"github.com/gofuncchan/ginger-gen/writer"
+	libCache "github.com/gofuncchan/ginger-gen/lib/cache"
+	"github.com/gofuncchan/ginger-gen/xprint"
 	"github.com/urfave/cli"
 	"io"
 	"text/template"
@@ -47,9 +47,9 @@ func cacheCommandAction(c *cli.Context) error {
 	}
 
 	// 设置输出
-	out, err := writer.OutputCacheFile(root, module)
+	out, err := libCache.OutputCacheFile(root, module)
 	if err != nil {
-		util.OutputWarn(err.Error())
+		xprint.Warn(err.Error())
 	}
 
 	_, err = io.Copy(out, &buffs)
@@ -58,7 +58,7 @@ func cacheCommandAction(c *cli.Context) error {
 	}
 
 	// stdout 输出router代码设置
-	util.OutputInfo("Generate Successful", outputCacheTips(fs))
+	xprint.Info("Generate Successful", outputCacheTips(fs))
 
 	return nil
 }

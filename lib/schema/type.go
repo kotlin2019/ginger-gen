@@ -5,19 +5,19 @@ import (
 )
 
 const (
-	cTypeInt64   = "int64"
-	cTypeInt     = "int"
-	cTypeUInt    = "uint"
-	cTypeString  = "string"
-	cTypeFloat64 = "float64"
-	cTypeTime    = "time.Time"
-	cTypeInt8    = "int8"
-	cTypeUInt64  = "uint64"
-	cTypeByte    = "byte"
-	cUnsigned    = "unsigned"
+	CTypeInt64   = "int64"
+	CTypeInt     = "int"
+	CTypeUInt    = "uint"
+	CTypeString  = "string"
+	CTypeFloat64 = "float64"
+	CTypeTime    = "time.Time"
+	CTypeInt8    = "int8"
+	CTypeUInt64  = "uint64"
+	CTypeByte    = "byte"
+	CUnsigned    = "unsigned"
 )
 
-//Typer holds two methods allow user easilly get the information of a type
+// Typer holds two methods allow user easilly get the information of a type
 type typer interface {
 	Type() string
 	Match() bool
@@ -67,7 +67,7 @@ func timeTypeWrapper(s string) typer {
 type int64Type string
 
 func (i64 int64Type) Type() string {
-	return cTypeInt64
+	return CTypeInt64
 }
 
 func (i64 int64Type) Match() bool {
@@ -80,29 +80,29 @@ func (i64 int64Type) Match() bool {
 type uint64Type string
 
 func (ui64 uint64Type) Type() string {
-	return cTypeUInt64
+	return CTypeUInt64
 }
 
 func (ui64 uint64Type) Match() bool {
 	s := string(ui64)
-	return strings.Contains(s, cUnsigned) && int64Type(s).Match()
+	return strings.Contains(s, CUnsigned) && int64Type(s).Match()
 }
 
 type byteType string
 
 func (b byteType) Type() string {
-	return cTypeByte
+	return CTypeByte
 }
 
 func (b byteType) Match() bool {
 	s := string(b)
-	return strings.Contains(s, cUnsigned) && int8Type(s).Match()
+	return strings.Contains(s, CUnsigned) && int8Type(s).Match()
 }
 
 type int8Type string
 
 func (b int8Type) Type() string {
-	return cTypeInt8
+	return CTypeInt8
 }
 
 func (b int8Type) Match() bool {
@@ -112,18 +112,18 @@ func (b int8Type) Match() bool {
 type uintType string
 
 func (ui uintType) Type() string {
-	return cTypeUInt
+	return CTypeUInt
 }
 
 func (ui uintType) Match() bool {
 	s := string(ui)
-	return strings.Contains(s, cUnsigned) && intType(s).Match()
+	return strings.Contains(s, CUnsigned) && intType(s).Match()
 }
 
 type intType string
 
 func (i intType) Type() string {
-	return cTypeInt
+	return CTypeInt
 }
 
 func (i intType) Match() bool {
@@ -133,7 +133,7 @@ func (i intType) Match() bool {
 type stringType string
 
 func (s stringType) Type() string {
-	return cTypeString
+	return CTypeString
 }
 
 func (s stringType) Match() bool {
@@ -150,7 +150,7 @@ func (s stringType) Match() bool {
 type float64Type string
 
 func (f64 float64Type) Type() string {
-	return cTypeFloat64
+	return CTypeFloat64
 }
 
 func (f64 float64Type) Match() bool {
@@ -160,7 +160,7 @@ func (f64 float64Type) Match() bool {
 type timeType string
 
 func (t timeType) Type() string {
-	return cTypeTime
+	return CTypeTime
 }
 
 func (t timeType) Match() bool {

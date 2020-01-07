@@ -1,7 +1,8 @@
 package cmd
 
 import (
-	"github.com/gofuncchan/ginger-gen/util"
+	libInit "github.com/gofuncchan/ginger-gen/lib/init"
+	"github.com/gofuncchan/ginger-gen/xprint"
 	"github.com/urfave/cli"
 	"os"
 	"runtime"
@@ -30,70 +31,76 @@ func initCommandFunc(c *cli.Context) error {
 	}
 
 	// 检查项目目录是否已存在
-	isExist := util.IsDir(name)
-	if isExist {
-		return util.OutputError("initialization failed, Project Directory Is Exist")
+	s, err := os.Stat(name)
+	if err == nil && s.IsDir() {
+		return xprint.Error("initialization failed, Project Directory Is Exist")
 	}
 
-	if !util.CheckDirMode() {
-		return util.OutputError("initialization failed, please check directory permissions")
+	xprint.Step("Env Checking")
+	if !libInit.CheckDirMode() {
+		return xprint.Error("initialization failed, please check directory permissions")
 	}
+	xprint.Ok("Current directory is readable and writable. ")
 
 	// 远程拉取ginger脚手架代码
 
 	// git clone 并删除.git本地文件,让用户自己init
-	done := util.GitClone(name)
-	if !done {
-		return util.OutputError("initialization failed, please check your network is ok")
-	}
-	err := os.RemoveAll(name + "/.git")
+	xprint.Step("git clone from " + libInit.GitUrl)
+	err = libInit.GitClone(name)
 	if err != nil {
-		return util.OutputError(err.Error())
+		return xprint.Error("initialization failed, please check your network is ok")
+	} else {
+		xprint.Ok("Clone ginger scaffold successful")
+	}
+
+	err = os.RemoveAll(name + "/.git")
+	if err != nil {
+		return xprint.Error(err.Error())
 	}
 
 	// 本地 git 初始化
 	initGit := c.Bool("g")
 	if initGit {
-		util.OutputStep("`git init`")
+		xprint.Step("`git init`")
 		InitGitCmd := "cd " + name + " && git init"
-		err := util.ExecShellCommand(InitGitCmd)
+		err := libInit.ExecShellCommand(InitGitCmd)
 		if err != nil {
-			return util.OutputError(err.Error())
+			return xprint.Error(err.Error())
 		}
 
-		util.OutputOk("git init successful")
+		xprint.Ok("git init successful")
 	}
 
 	// 由于使用go module 管理依赖，项目内的包需要replace到本地目录，使用go mod edit 重置
-	if v, err := util.GetMinVer(runtime.Version()); err == nil && v < 13 && v >= 11 {
-		util.OutputStep(runtime.Version())
-		util.OutputStep("`export GO111MODULE=on`")
-		err = util.ExecShellCommand("export GO111MODULE=on")
+	if v, err := libInit.GetMinVer(runtime.Version()); err == nil && v < 13 && v >= 11 {
+		xprint.Step(runtime.Version())
+		xprint.Step("`export GO111MODULE=on`")
+		err = libInit.ExecShellCommand("export GO111MODULE=on")
 		if err != nil {
-			return util.OutputError(err.Error())
+			return xprint.Error(err.Error())
 		}
 
 		pwd, err := os.Getwd()
 		pwd = pwd + "/" + name
 		if err != nil {
-			return util.OutputError(err.Error())
+			return xprint.Error(err.Error())
 		}
 
 		goModCmd := "cd " + name + " && go mod edit -replace github.com/gofuncchan/ginger=" + pwd
-		err = util.ExecShellCommand(goModCmd)
+		err = libInit.ExecShellCommand(goModCmd)
 		if err != nil {
-			return util.OutputError(err.Error())
+			return xprint.Error(err.Error())
 		}
 
-		util.OutputStep("go mod edit -replace github.com/gofuncchan/ginger=" + pwd)
-		util.OutputOk("go mod replace successful")
+		xprint.Step("go mod edit -replace github.com/gofuncchan/ginger=" + pwd)
+		xprint.Ok("go mod replace successful")
 
-	}else {
-		return util.OutputError(err.Error())
+	} else {
+		return xprint.Error(err.Error())
 	}
-	util.OutputOk("Your project `" + name + "` set up successful")
+	xprint.Ok("Your project `" + name + "` set up successful")
 
-	util.OutputInfo("Tips", `
+	xprint.Info("Tips", `
 	1.Because ginger uses go module to manage dependency packages, you can start with your config by default;
 
 	2.The default root package is github.com/gofuncchan/ginger. If you need to change it, please replace it globally and modify the go.mod file;

@@ -2,25 +2,17 @@ package cmd
 
 import (
 	"bytes"
-	libSchema "github.com/gofuncchan/ginger-gen/schemaLib/schema"
+	libSchema "github.com/gofuncchan/ginger-gen/lib/schema"
+	"github.com/gofuncchan/ginger-gen/xprint"
 	"github.com/urfave/cli"
 	"io"
 )
 
 var MysqlCommand = cli.Command{
-	Name:        "mysql",
-	Usage:       "generate dao code",
-	UsageText:   "ginger-gen mysql [sub-command] [option]",
-	Description: "generate sql builder code for dao which fork didi/gendry",
-	Subcommands: []cli.Command{
-		subCommandSchema,
-	},
-}
-
-var subCommandSchema = cli.Command{
 	Name:        "schema",
-	UsageText:   "",
-	Description: "generate mysql table schema to go struct",
+	Usage:       "generate mysql table schema to go struct",
+	UsageText:   "generate mysql table schema to go struct",
+	Description: "generate sql builder code for dao which fork didi/gendry",
 	Flags: []cli.Flag{
 		cli.StringFlag{Name: "host, H", Value: "localhost"},
 		cli.IntFlag{Name: "port, P", Value: 3306},
@@ -29,10 +21,11 @@ var subCommandSchema = cli.Command{
 		cli.StringFlag{Name: "database, d", Required: true},
 		cli.StringFlag{Name: "table, t", Required: true},
 	},
-	Action: subCommandSchemaAction,
+	Action: commandSchemaAction,
+
 }
 
-func subCommandSchemaAction(c *cli.Context) error {
+func commandSchemaAction(c *cli.Context) error {
 	// 接收参数
 	libSchemaArgs := &libSchema.SchemaArgs{
 		Database: c.String("database"),
@@ -48,26 +41,26 @@ func subCommandSchemaAction(c *cli.Context) error {
 	// 加包名
 	_, err := io.Copy(&buff, libSchema.AddImportContent(libSchemaArgs.Table))
 	if err != nil {
-		return libSchema.OutputError(err.Error())
+		return xprint.Error(err.Error())
 	}
 	// 生成go 结构体 代码
-	_, err = libSchema.GenSchema(&buff, libSchemaArgs)
+	_, err = libSchema.GenSchemaStruct(&buff, libSchemaArgs)
 	if err != nil {
-		return libSchema.OutputError(err.Error())
+		return xprint.Error(err.Error())
 	}
 
 	// 设置输出
 	out, err := libSchema.OutputFile(libSchema.DefaultSchemaOutputRootPath,libSchemaArgs.Table)
 	if err != nil {
-		libSchema.OutputWarn(err.Error())
+		xprint.Warn(err.Error())
 	}
 
 	_, err = io.Copy(out, &buff)
 	if err != nil {
-		return libSchema.OutputError(err.Error())
+		return xprint.Error(err.Error())
 	}
 
-	libSchema.OutputOk("Generate go struct from table libSchema successful")
+	xprint.Ok("Generate go struct from table libSchema successful")
 
 	return nil
 }

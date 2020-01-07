@@ -3,8 +3,8 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"github.com/gofuncchan/ginger-gen/util"
-	"github.com/gofuncchan/ginger-gen/writer"
+	"github.com/gofuncchan/ginger-gen/lib/model"
+	"github.com/gofuncchan/ginger-gen/xprint"
 	"github.com/urfave/cli"
 	"io"
 	"text/template"
@@ -50,9 +50,9 @@ func modelCommandAction(c *cli.Context) error {
 	}
 
 	// 设置输出
-	out, err := writer.OutputModelFile(root, module)
+	out, err := model.OutputModelFile(root, module)
 	if err != nil {
-		util.OutputWarn(err.Error())
+		xprint.Warn(err.Error())
 	}
 
 	_, err = io.Copy(out, &buffs)
@@ -61,7 +61,7 @@ func modelCommandAction(c *cli.Context) error {
 	}
 
 	// stdout 输出router代码设置
-	util.OutputInfo("Generate Successful", outputModelTips(fs))
+	xprint.Info("Generate Successful", outputModelTips(fs))
 
 	return nil
 }

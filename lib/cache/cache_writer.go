@@ -1,4 +1,4 @@
-package writer
+package cache
 
 import (
 	"bytes"
@@ -8,15 +8,18 @@ import (
 )
 
 // 输出
-func OutputHandlerFile(root, module string) (io.Writer, error) {
+func OutputCacheFile(root, module string) (io.Writer, error) {
+	packName := module + "Cache"
+
 	// 创建输出目录
-	err := os.MkdirAll("handler", 0755)
+	err := os.MkdirAll("cache/"+packName, 0755)
 	if err != nil {
 		// 如目录创建失败，则标准输出
 		return os.Stdout, err
 	}
 
-	filename := "handler/" + module + "_handler.go"
+	// 如: /cache/tokenCache/token_cache.go
+	filename := "cache/" + packName + "/" + module + "_cache.go"
 
 	// 创建输出的目录并创建输出的go文件
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
@@ -29,7 +32,7 @@ func OutputHandlerFile(root, module string) (io.Writer, error) {
 	var std = os.Stdout
 	var out io.Reader
 	if os.IsNotExist(err) {
-		out = addHandlerImportContent(root)
+		out = addCacheImportContent(root,packName)
 		file, err = os.Create(filename)
 		if err != nil {
 			io.Copy(std, out)
@@ -43,18 +46,26 @@ func OutputHandlerFile(root, module string) (io.Writer, error) {
 	return std, err
 }
 
-func addHandlerImportContent(root string) io.Reader {
-	return bytes.NewBuffer([]byte(fmt.Sprintf(`package handler
+func addCacheImportContent(root,packName string) io.Reader {
+	return bytes.NewBuffer([]byte(fmt.Sprintf(`package %s
 
 import(
-    "%s/common"
-    "github.com/gin-gonic/gin"
+	redigo "github.com/garyburd/redigo/redis"
+	"%s/dao/redis"
 )
 
 /*
 This code is generated with ginger-gen.
-You must reset Request Params, and implement biz logic code.
+You should handling errors in cache function,and return data or result to caller.
+
+For example:
+
+func SetKey(key, value string) bool {
+	rs, _ := redigo.String(redis.R("SET", key, value, "EX", 3600))
+	return rs == "OK"
+}
+
 */
 
-	`, root)))
+	`, packName,root)))
 }
