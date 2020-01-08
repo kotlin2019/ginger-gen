@@ -69,7 +69,12 @@ func Get{{ .CamelModuleName }}List(c *gin.Context) {
 	}
 	orderFields = strings.Join(sorts, ",")
 
-	{{ .ModuleName }}List, err := {{ .ModuleName }}Model.Get{{ .CamelModuleName }}List(form.Offset, form.Count, orderFields, nil)
+	var offset uint
+	if form.Page > 1 {
+		offset = (form.Page - 1) * form.Count
+	}
+
+	{{ .ModuleName }}List, err := {{ .ModuleName }}Model.Get{{ .CamelModuleName }}List(offset, form.Count, orderFields, nil)
 	if !e.Eh(err) {
 		common.ResponseModelError(c, err.Error())
 		return

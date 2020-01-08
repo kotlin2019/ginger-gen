@@ -9,10 +9,10 @@ import (
 func GenGetListParams() []HandlerParam {
 	params := []HandlerParam{
 		{
-			Name:      "Offset",
+			Name:      "page",
 			Type:      "uint",
-			StructTag: "`json:\"offset\" validate:\"required,numeric\"`",
-			Comment:	"// 获取位移",
+			StructTag: "`json:\"page\" validate:\"required,numeric\"`",
+			Comment:	"// 页数",
 		},
 		{
 			Name:      "Count",

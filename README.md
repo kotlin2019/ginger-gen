@@ -60,6 +60,7 @@ ginger-gen 提供多个命令方便你自动生成脚手架代码，如下：
 - 基于mgo的数据存储层代码
 - 基于redis缓存层的代码
 - 根据yaml文件自动生成解析逻辑代码
+- 可根据数据库表快速生成一个CURD 模块
 
 Use `ginger-gen [command] -h` to see command detail.
 
