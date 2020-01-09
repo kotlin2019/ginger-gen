@@ -31,7 +31,7 @@ import(
 @param sort string 字段排序 如"a desc,b asc,..."
 @param filter map[string]interface{} 字段过滤条件
 */
-func Get{{ .CamelModuleName }}List(offset, count uint, sort string, filter map[string]interface{}) ([]*schema.{{ .CamelModuleName }}, error) {
+func Get{{ .CamelModuleName }}List(offset, count uint, sort string, filter map[string]interface{},selectFields []string) ([]*schema.{{ .CamelModuleName }}, error) {
 	where := make(map[string]interface{}, 0)
 	if count != 0 {
 		where["_limit"] = []uint{offset, count}
@@ -47,7 +47,7 @@ func Get{{ .CamelModuleName }}List(offset, count uint, sort string, filter map[s
 
 	// 接收查询结果
 	{{ .ModuleName }}Results := make([]*schema.{{ .CamelModuleName }}, 0)
-	err := mysql.GetMulti(schema.{{ .CamelModuleName }}TableName, where, nil, &{{ .ModuleName }}Results)
+	err := mysql.GetMulti(schema.{{ .CamelModuleName }}TableName, where, selectFields, &{{ .ModuleName }}Results)
 	if !e.Em(err) {
 		return nil, err
 	}
@@ -58,12 +58,12 @@ func Get{{ .CamelModuleName }}List(offset, count uint, sort string, filter map[s
 /*
 获取单个
 */
-func Get{{ .CamelModuleName }}InfoById(id int64) (*schema.{{ .CamelModuleName }}, error) {
+func Get{{ .CamelModuleName }}InfoById(id int64,selectFields []string) (*schema.{{ .CamelModuleName }}, error) {
 	where := map[string]interface{}{
 		"id": id,
 	}
 	{{ .ModuleName }}Result := new(schema.{{ .CamelModuleName }})
-	err := mysql.GetOne(schema.{{ .CamelModuleName }}TableName, where, nil, {{ .ModuleName }}Result)
+	err := mysql.GetOne(schema.{{ .CamelModuleName }}TableName, where, selectFields, {{ .ModuleName }}Result)
 	if !e.Em(err) {
 		return nil, err
 	}

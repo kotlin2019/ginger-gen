@@ -74,7 +74,7 @@ func Get{{ .CamelModuleName }}List(c *gin.Context) {
 		offset = (form.Page - 1) * form.Count
 	}
 
-	{{ .ModuleName }}List, err := {{ .ModuleName }}Model.Get{{ .CamelModuleName }}List(offset, form.Count, orderFields, nil)
+	{{ .ModuleName }}List, err := {{ .ModuleName }}Model.Get{{ .CamelModuleName }}List(offset, form.Count, orderFields, nil, nil)
 	if !e.Eh(err) {
 		common.ResponseModelError(c, err.Error())
 		return
@@ -103,7 +103,7 @@ func Get{{ .CamelModuleName }}(c *gin.Context) {
 		return
 	}
 
-	adminInfo, err := {{ .ModuleName }}Model.Get{{ .CamelModuleName}}InfoById(form.Id)
+	adminInfo, err := {{ .ModuleName }}Model.Get{{ .CamelModuleName}}InfoById(form.Id, nil)
 	if !e.Eh(err) {
 		common.ResponseModelError(c,err.Error())
 		return
