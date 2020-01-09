@@ -9,22 +9,28 @@ import (
 func GenGetListParams() []HandlerParam {
 	params := []HandlerParam{
 		{
-			Name:      "page",
+			Name:      "Page",
 			Type:      "uint",
 			StructTag: "`json:\"page\" validate:\"required,numeric\"`",
-			Comment:	"// 页数",
+			Comment:	"// 分页页码",
 		},
 		{
 			Name:      "Count",
 			Type:      "uint",
 			StructTag: "`json:\"count\" validate:\"required,numeric\"`",
-			Comment:	"// 每次获取数目",
+			Comment:	"// 每页数目",
 		},
 		{
 			Name:      "Order",
 			Type:      "map[string]int",
 			StructTag: "`json:\"order\"`",
-			Comment:	"// 排序",
+			Comment:	"// 字段排序",
+		},
+		{
+			Name:      "Filter",
+			Type:      "[][]interface{}",
+			StructTag: "`json:\"filter\"`",
+			Comment:	"// 查询过滤",
 		},
 	}
 	return params

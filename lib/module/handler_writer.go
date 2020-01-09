@@ -14,7 +14,7 @@ func OutputHandlerFile(module string) (io.Writer, error) {
 	filename := "handler/" + module + "_handler.go"
 
 	// 创建输出的目录并创建输出的go文件
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0755)
 	// 如存在，直接输出该文件
 	if err == nil {
 		return file, nil

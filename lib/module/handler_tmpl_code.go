@@ -32,6 +32,7 @@ package handler
 import(
 	"github.com/gin-gonic/gin"
 	"{{ .RootPackageName }}/common"
+	"{{ .RootPackageName }}/model"
 	"{{ .RootPackageName }}/model/{{ .ModuleName }}Model"
 	"{{ .RootPackageName }}/util/e"
 	"strings"
@@ -40,6 +41,27 @@ import(
 
 /*
 列表
+For Example:
+Content-Type:"application/json"
+
+{
+	"page":1,
+	"count":10,
+	"order":{
+		"name":-1,
+		"create_at":1,
+	},
+	filter:[
+		["name","like","%f%"],
+		["create_at",">","1000"],
+		["status","=",1]
+	]
+}
+
+filter过滤条件：
+"=",">","<","=","<=",">=","!=","<>"
+"in","not in","like","not like","between","not between"
+
 */
 type Get{{ .CamelModuleName }}ListParams struct {
 	{{- range .GetListParams }}
@@ -55,6 +77,13 @@ func Get{{ .CamelModuleName }}List(c *gin.Context) {
 		return
 	}
 
+	// set limit offset for paging
+	var offset uint
+	if form.Page > 1 {
+		offset = (form.Page - 1) * form.Count
+	}
+
+	// generate order fields
 	var sorts []string
 	var orderFields string
 	for k, v := range form.Order {
@@ -69,12 +98,16 @@ func Get{{ .CamelModuleName }}List(c *gin.Context) {
 	}
 	orderFields = strings.Join(sorts, ",")
 
-	var offset uint
-	if form.Page > 1 {
-		offset = (form.Page - 1) * form.Count
+	// generate filter fields
+	filterMap, err := model.ConvertFilterToMap(form.Filter)
+	if !e.Eh(err){
+		common.ResponseInvalidParam(c,err.Error())
 	}
 
-	{{ .ModuleName }}List, err := {{ .ModuleName }}Model.Get{{ .CamelModuleName }}List(offset, form.Count, orderFields, nil, nil)
+	// TODO set selectFields
+	var selectFields []string
+
+	{{ .ModuleName }}List, err := {{ .ModuleName }}Model.Get{{ .CamelModuleName }}List(offset, form.Count, orderFields, filterMap, selectFields)
 	if !e.Eh(err) {
 		common.ResponseModelError(c, err.Error())
 		return
@@ -103,7 +136,10 @@ func Get{{ .CamelModuleName }}(c *gin.Context) {
 		return
 	}
 
-	adminInfo, err := {{ .ModuleName }}Model.Get{{ .CamelModuleName}}InfoById(form.Id, nil)
+	// TODO set selectFields
+	var selectFields []string
+
+	adminInfo, err := {{ .ModuleName }}Model.Get{{ .CamelModuleName}}InfoById(form.Id, selectFields)
 	if !e.Eh(err) {
 		common.ResponseModelError(c,err.Error())
 		return
