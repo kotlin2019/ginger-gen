@@ -47,10 +47,10 @@ func readTableStruct(db *sql.DB, tableName string, dbName string) (ColumnSlice, 
 func createStructSourceCode(cols ColumnSlice, tableName string) (io.Reader, string, error) {
 	structName := ConvertUnderScoreToCamel(tableName)
 	fillData := sourceCode{
-		packageName:tableName,
-		StructName: structName,
-		TableName:  tableName,
-		FieldList:  make([]sourceColumn, len(cols)),
+		packageName: tableName,
+		StructName:  structName,
+		TableName:   tableName,
+		FieldList:   make([]sourceColumn, len(cols)),
 	}
 	for idx, col := range cols {
 		colType, err := col.GetType()
@@ -60,7 +60,7 @@ func createStructSourceCode(cols ColumnSlice, tableName string) (io.Reader, stri
 		fillData.FieldList[idx] = sourceColumn{
 			Name:      col.GetName(),
 			Type:      colType,
-			StructTag: fmt.Sprintf("`ddb:\"%s\"`", col.Name),
+			StructTag: fmt.Sprintf("`ddb:\"%s\" json:\"%s\"`", col.Name, col.Name),
 		}
 	}
 	var buff bytes.Buffer
@@ -74,9 +74,9 @@ func createStructSourceCode(cols ColumnSlice, tableName string) (io.Reader, stri
 // 源码信息结构体
 type sourceCode struct {
 	packageName string
-	StructName string
-	TableName  string
-	FieldList  []sourceColumn
+	StructName  string
+	TableName   string
+	FieldList   []sourceColumn
 }
 
 // 表列信息结构体
@@ -85,4 +85,3 @@ type sourceColumn struct {
 	Type      string
 	StructTag string
 }
-
